@@ -16,3 +16,13 @@
 | RF4 |  O sistema deve permitir a edição dos registros existentes.|
 | RF5 | O sistema deve permitir a exclusão dos registros existentes.|
 | RF6 |  O sistema deve permitir a visualização dos registros através de uma interface visual.|
+
+Este projeto foi idealizado e desenvolvido por:
+
+- [Ana Beatriz Barreto](https://github.com/seu-usuario)
+- [Gabriel Carvalho](https://github.com/seu-usuario)
+- [João Miguel Dias](https://github.com/seu-usuario) 
+- [João Vitor do Prado](https://github.com/joaopradov) 
+
+
+
