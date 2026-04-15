@@ -6,6 +6,10 @@
 ## Tecnologias Utilizadas
 <p>A aplicação Back-end será composta por uma API Rest desenvolvida em Node.js, integrada a um banco de dados MySQL. Já o Front-end será desenvolvido em React.js, para facilitar a criação de uma UI responsiva e manutenível.</p>
 
+<br>
+<br>
+<br>
+
 Este projeto foi idealizado e desenvolvido por:
 
 - [Ana Beatriz Barreto](https://github.com/seu-usuario)
