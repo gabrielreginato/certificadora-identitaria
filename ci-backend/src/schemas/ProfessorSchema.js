@@ -11,7 +11,8 @@ const ProfessorSchema = z.object({
     email: z.string({
         error: (issue) => issue.input === undefined ? "O e-mail é obrigatório.": "O e-mail deve ser uma String."
     })
-        .email("Formato de e-mail inválido."),
+        .email("Formato de e-mail inválido.")
+        .max(100, "O e-mail deve ter no máximo 100 carateres."),
 }, {
     error: (issue) => {
         if(issue.input === undefined) return "O corpo da requisição (JSON) é obrigatório.";

@@ -14,11 +14,11 @@ const Oficina = db.define('oficina', {
         allowNull: false,
     },
     descricao: {
-        type: Sequelize.TEXT,
+        type: Sequelize.STRING,
         allowNull: false,
     },
     tema: {
-        type: Sequelize.STRING,
+        type: Sequelize.STRING(100),
         allowNull: false,
     },
     professor_responsavel: {

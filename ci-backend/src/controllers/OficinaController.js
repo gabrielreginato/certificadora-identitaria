@@ -1,18 +1,19 @@
-const express = require('express');
-const { ProfessorSchema, SearchProfessorSchema, UpdateProfessorSchema } = require('../schemas/ProfessorSchema');
+const { OficinaService } = require('../services/OficinaService');
+const { OficinaSchema, UpdateOficinaSchema, SearchOficinaSchema } = require('../schemas/OficinaSchema');
 const { IdentifierSchema } = require('../schemas/IdentifierSchema');
-const { body, query } = require('express-validator');
-const { ProfessorService } = require('../services/ProfessorService');
-const { z } = require('zod'); 
+const express = require('express');
 const { BusinessError } = require('../errors/BusinessError');
+const { body, query } = require('express-validator');
+const { z } = require('zod');
 
-route = express.Router();
 
-const service = new ProfessorService();
+const route = express.Router();
+
+const service = new OficinaService();
 
 route.get('/', async (req, res) => {
     try {
-        const filtros = SearchProfessorSchema.parse(req.query);
+        const filtros = SearchOficinaSchema.parse(req.query);
 
         const result = await service.find(filtros);
         console.log(result);
@@ -35,13 +36,13 @@ route.get('/', async (req, res) => {
 
 route.post('/', async (req, res) => {
     try {
-        const dadosValidados = ProfessorSchema.parse(req.body);
+        const dadosValidados = OficinaSchema.parse(req.body);
         const result = await service.create(dadosValidados);
 
         console.log(result);
 
         return res.status(201).json({
-            message: "Professor cadastrado com sucesso.",
+            message: "Oficina criada com sucesso.",
             data: result
         });
     } catch (error) {
@@ -67,14 +68,14 @@ route.post('/', async (req, res) => {
 route.put('/:id', async (req, res) => {
     try {
         const { id } = IdentifierSchema.parse(req.params);
-        const dadosValidados = UpdateProfessorSchema.parse(req.body);
+        const dadosValidados = UpdateOficinaSchema.parse(req.body);
 
         const result = await service.updateById(id, dadosValidados);
 
         console.log(result);
 
         return res.status(201).json({
-            message: "Professor atualizado com sucesso."
+            message: "Oficina atualizada com sucesso."
         });
     } catch (error) {
         if(error instanceof z.ZodError) {
@@ -103,7 +104,7 @@ route.delete('/:id', async (req, res) => {
         const result = await service.deleteById(id);
         console.log(result);
 
-        return res.status(204).json({ message: "Professor apagado com sucesso." });
+        return res.status(204).json({});
     } catch (error) {
         if(error instanceof z.ZodError) {
             return res.status(400).json({

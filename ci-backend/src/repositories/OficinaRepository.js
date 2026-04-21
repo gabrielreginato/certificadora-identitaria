@@ -1,6 +1,6 @@
-const { Aluno: Oficina } = require('../../models/Aluno');
+const { Oficina } = require('../../models/Oficina');
 
-class OficiaRepository {
+class OficinaRepository {
     async create(data) {
         return await Oficina.create(data);
     }
@@ -20,4 +20,4 @@ class OficiaRepository {
     }
 }
 
-module.exports = { AlunoRepository: OficiaRepository }
+module.exports = { OficinaRepository }

@@ -9,12 +9,12 @@ const Aluno = db.define('aluno', {
         autoIncrement: true
     },
     nome: {
-        type: Sequelize.STRING(150),
+        type: Sequelize.STRING(100),
         allowNull: false,
     },
     
     email: {
-        type: Sequelize.STRING(150),
+        type: Sequelize.STRING(100),
         allowNull: false,
     },
     ra: {
