@@ -8,9 +8,7 @@ async function verifyEmailDuplicate(email) {
     for(const entity of entities) {
         const found = await entity.findOne({ where: { email: email } });
 
-        if(found) {
-            return true;
-        }
+        if(found) return true;
     }
 
     return false;

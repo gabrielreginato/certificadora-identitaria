@@ -9,16 +9,17 @@ const Professor = db.define('professor', {
         autoIncrement: true
     },
     nome: {
-        type: Sequelize.STRING(150),
+        type: Sequelize.STRING(100),
         allowNull: false,
     },
     email: {
-        type: Sequelize.STRING(150),
+        type: Sequelize.STRING(100),
         allowNull: false,
     },
 }, {
-    timestamps: false,
-    tableName: 'professores'
+    tableName: 'professores',
+    underscored: true,
+    timestamps: true,
 });
 
 module.exports = { Professor };

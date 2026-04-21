@@ -20,20 +20,21 @@ class AlunoService {
 
     async create(data) {
         try {
-            if(verifyEmailDuplicate(data.email)) throw new BusinessError("Este e-mail já está em uso.", 409);
+            console.log(data)
+            if(await verifyEmailDuplicate(data.email)) throw new BusinessError("Este e-mail já está em uso.", 409);
 
-            result = await this.repository.create(data);
+            const result = await this.repository.create(data);
         } catch(error) {
-            /*if(error instanceof sequelize.UniqueConstraintError) {
+            if(error instanceof sequelize.UniqueConstraintError) {
                 const messages = {
                     email: "Este e-mail já pertence a outro aluno.",
                     ra: "Este RA já pertence a outro aluno."
                 }
 
                 throw new BusinessError(messages[error.errors[0].path], 409);
-            }*/
+            }
 
-                throw error;
+            throw error;
         }
     }
 
@@ -42,18 +43,20 @@ class AlunoService {
             const aluno = await this.repository.find({ id: id });
 
             if(!aluno || aluno.length === 0) throw new BusinessError("ID não encontrado", 404);
-            if(verifyEmailDuplicate(data.email)) throw new BusinessError("Este e-mail já está em uso.", 409);
+            if(data.email) {
+                if(await verifyEmailDuplicate(data.email)) throw new BusinessError("Este e-mail já está em uso.", 409);
+            }
 
             return await this.repository.updateById(id, data);
         } catch(error) {
-            /*if(error instanceof sequelize.UniqueConstraintError) {
+            if(error instanceof sequelize.UniqueConstraintError) {
                 const messages = {
                     email: "Este e-mail já pertence a outro aluno.",
                     ra: "Este RA já pertence a outro aluno."
                 }
 
                 throw new BusinessError(messages[error.errors[0].path], 409);
-            }*/
+            }
 
             throw error;
         }

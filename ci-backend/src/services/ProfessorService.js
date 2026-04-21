@@ -19,17 +19,18 @@ class ProfessorService {
 
     async create(data) {
         try {
-            if(verifyEmailDuplicate(data.email)) throw new BusinessError("Este e-mail já está em uso.", 409);
+            if(await verifyEmailDuplicate(data.email)) throw new BusinessError("Este e-mail já está em uso.", 409);
 
             return await this.repository.create(data);
         } catch(error) {
-            /*if(error instanceof sequelize.UniqueConstraintError) {
+            //Verificação para o caso de futuras colunas de valor único da tabela 'professores'
+            if(error instanceof sequelize.UniqueConstraintError) {
                 const messages = {
                     email: "Este e-mail já pertence a outro professor.",
                 }
 
                 throw new BusinessError(messages[error.errors[0].path], 409);
-            }*/
+            }
 
             throw error;
         }
@@ -40,17 +41,20 @@ class ProfessorService {
             const professor = await this.repository.find({ id: id });
 
             if(!professor || professor.length === 0) throw new BusinessError("ID não encontrado", 404);
-            if(verifyEmailDuplicate(data.email)) throw new BusinessError("Este e-mail já está em uso.", 409);
+            if(data.email) {
+                if(await verifyEmailDuplicate(data.email)) throw new BusinessError("Este e-mail já está em uso.", 409);
+            }
             
             return await this.repository.updateById(id, data);
         } catch(error) {
-            /*if(error instanceof sequelize.UniqueConstraintError) {
+            //Verificação para o caso de futuras colunas de valor único da tabela 'professores'
+            if(error instanceof sequelize.UniqueConstraintError) {
                 const messages = {
                     email: "Este e-mail já pertence a outro professor.",
                 }
 
                 throw new BusinessError(messages[error.errors[0].path], 409);
-            }*/
+            }
 
             throw error;
         }

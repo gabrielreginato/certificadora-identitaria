@@ -22,8 +22,9 @@ const Aluno = db.define('aluno', {
         allowNull: false,
     }
 }, {
-    timestamps: false,
-    tableName: 'alunos'
+    tableName: 'alunos',
+    underscored: true,
+    timestamps: true,
 });
 
 module.exports = { Aluno };
