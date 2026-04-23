@@ -21,7 +21,7 @@ const Oficina = db.define('oficina', {
         type: Sequelize.STRING(100),
         allowNull: false,
     },
-    professor_responsavel: {
+    professor_responsavel_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
@@ -36,7 +36,8 @@ const Oficina = db.define('oficina', {
 });
 
 Oficina.belongsTo(Professor, {
-    foreignKey: 'professor_responsavel',
+    foreignKey: 'professor_responsavel_id',
+    as: 'professor'
 })
 
 module.exports = { Oficina };

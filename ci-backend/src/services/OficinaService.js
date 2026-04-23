@@ -1,6 +1,7 @@
 const { OficinaRepository } = require('../repositories/OficinaRepository');
 const sequelize = require('sequelize');
 const { BusinessError } = require('../errors/BusinessError');
+const { Professor } = require('../../models/Professor');
 
 class OficinaService {
     constructor() {
@@ -9,11 +10,22 @@ class OficinaService {
     
     async find(filtros) {
         const where = {};
+        const include = [];
         
         if(filtros.titulo) where.titulo = { [sequelize.Op.like]: `%${filtros.titulo}%` };
         if(filtros.tema) where.tema = { [sequelize.Op.like]: `%${filtros.tema}%` };
+        if(filtros.professor_responsavel_id) where.professor_responsavel_id = filtros.professor_responsavel_id;
 
-        return await this.repository.find(where);
+        if(filtros.professor_responsavel_nome) {
+            where['$professor.nome$'] = { [sequelize.Op.like]: `%${filtros.professor_responsavel_nome}%` };
+        }
+
+        include.push({
+            model: Professor,
+            as: 'professor'
+        });
+
+        return await this.repository.find(where, include);
     }
 
     async create(data) {
@@ -22,7 +34,7 @@ class OficinaService {
         } catch(error) {
             if(error instanceof sequelize.ForeignKeyConstraintError) {
                 const messages = {
-                    professor_responsavel: "ID de professor não encontrado.",
+                    professor_responsavel_id: "ID de professor não encontrado.",
                 }
 
                 throw new BusinessError(messages[error.fields[0]], 409);
@@ -42,7 +54,7 @@ class OficinaService {
         } catch(error) {
             if(error instanceof sequelize.ForeignKeyConstraintError) {
                 const messages = {
-                    professor_responsavel: "ID de professor não encontrado.",
+                    professor_responsavel_id: "ID de professor não encontrado.",
                 }
 
                 throw new BusinessError(messages[error.fields[0]], 409);

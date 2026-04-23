@@ -5,9 +5,10 @@ class OficinaRepository {
         return await Oficina.create(data);
     }
 
-    async find(data) {
+    async find(data, include = []) {
         return await Oficina.findAll({
-            where: data
+            where: data,
+            include: include
         });
     }
 
