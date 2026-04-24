@@ -6,23 +6,37 @@ const EncontroSchema = z.object({
     })
         .regex(/^[0-9]+$/, "O ID da oficina deve conter apenas números."),
 
-    data_horario_inicio: z.coerce.date({
-        errorMap: () => ({ message: "Data de início inválida ou ausente." }),
-        error: (issue) => issue.input === undefined ? "Forneça uma data válida.": "A data deve estar no formato ISO 8601 (ex: 2026-04-22T19:00:00Z)"
-    }),
+    data_horario_inicio: z.string({
+        error: (issue) => issue.input === undefined ? "Forneça uma data válida.": "A data deve ser uma String."
+    })
+        .datetime({ message: "A data deve estar no formato ISO 8601 (String)" })
+        .transform((val) => new Date(val)),
 
-    data_horario_fim: z.coerce.date({
-        errorMap: () => ({ message: "Data de início inválida ou ausente." }),
-        error: (issue) => issue.input === undefined ? "Forneça uma data válida.": "A data deve estar no formato ISO 8601 (ex: 2026-04-22T19:00:00Z)"
-    }),
+    data_horario_fim: z.string({
+        error: (issue) => issue.input === undefined ? "Forneça uma data válida.": "A data deve ser uma String."
+    })
+        .datetime({ message: "A data deve estar no formato ISO 8601 (String)" })
+        .transform((val) => new Date(val)),
 
 }, {
     error: (issue) => {
         if(issue.input === undefined) return "O corpo da requisição (JSON) é obrigatório.";
     }
-}).refine((data) => data.data_horario_fim > data.data_horario_inicio, {
-    message: "A data de término deve ser posterior à data de início.",
-    path: ["data_horario_fim"]
 });
 
-module.exports = { EncontroSchema };
+const UpdateEncontroSchema = EncontroSchema
+    .partial()
+    .refine((data) => Object.keys(data).length > 0, {
+        message: "Pelo menos um campo deve ser preenchido para atualização."
+    });
+
+const SearchEncontroSchema = z.object({
+    id: z.string().regex(/^[0-9]+$/).transform(Number).optional(),
+    data_horario_inicio: z.string().optional(),
+    data_horario_fim: z.string().optional(),
+    oficina_titulo: z.string().optional(),
+    oficina_id: z.string().regex(/^[0-9]+$/).transform(Number).optional(),
+    page: z.string().regex(/^[0-9]+$/).transform(Number).optional()
+});
+
+module.exports = { EncontroSchema, UpdateEncontroSchema, SearchEncontroSchema };

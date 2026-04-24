@@ -1,5 +1,6 @@
 const { DataTypes: Sequelize } = require('sequelize');
 const { sequelize: db } = require('../config/MysqlConnection');
+const { Oficina } = require('./Oficina');
 
 const Encontro = db.define('encontro', {
     id: {
@@ -40,5 +41,10 @@ const Encontro = db.define('encontro', {
     underscored: true,
     timestamps: true,
 });
+
+Encontro.belongsTo(Oficina, {
+    foreignKey: 'oficina_id',
+    as: 'oficina'
+})
 
 module.exports = { Encontro };
