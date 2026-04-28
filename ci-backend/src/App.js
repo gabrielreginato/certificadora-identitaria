@@ -4,6 +4,8 @@ const { route: alunoController } = require('./controllers/AlunoController') ;
 const { route: professorController } = require('./controllers/ProfessorController');
 const { route: oficinaController } = require('./controllers/OficinaController');
 const { route: encontroController } = require('./controllers/EncontroController');
+const { route: vinculoAlunoOficinaController } = require('./controllers/links/VinculoAlunoOficinaController');
+const { route: vinculoProfessorOficinaController } = require('./controllers/links/VinculoProfessorOficinaController');
 
 const app = express();
 
@@ -14,5 +16,7 @@ app.use('/alunos', alunoController);
 app.use('/professores', professorController);
 app.use('/oficinas', oficinaController);
 app.use('/encontros', encontroController);
+app.use('/vinculo-aluno-oficina', vinculoAlunoOficinaController);
+app.use('/vinculo-professor-oficina', vinculoProfessorOficinaController);
 
 app.listen(3000);

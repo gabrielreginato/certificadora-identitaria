@@ -1,7 +1,7 @@
 const { EncontroRepository } = require('../repositories/EncontroRepository');
 const sequelize = require('sequelize');
 const { BusinessError } = require('../errors/BusinessError');
-const { Oficina } = require('../../models/Oficina');
+const { Oficina } = require('../../models/index');
 
 class EncontroService {
     constructor() {

@@ -3,30 +3,30 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.createTable('oficinas', { 
+    await queryInterface.createTable('aluno_participa_oficina', { 
       id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         primaryKey: true,
         autoIncrement: true
       },
-      titulo: {
-        type: Sequelize.STRING(100),
-        allowNull: false,
-      },
-      descricao: {
-        type: Sequelize.TEXT,
-        allowNull: false,
-      },
-      tema: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      professor_responsavel_id: {
+
+      oficina_id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'professores',
+          model: 'oficinas',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
+      },
+
+      aluno_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: {
+          model: 'alunos',
           key: 'id'
         },
         onUpdate: 'CASCADE',
@@ -38,15 +38,21 @@ module.exports = {
         allowNull: false,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
+
       updated_at: {
         type: Sequelize.DATE,
         allowNull: false,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP')
       }
     });
+
+    await queryInterface.addIndex('aluno_participa_oficina', ['oficina_id', 'aluno_id'], {
+      unique: true,
+      name: 'unique_aluno_oficina'
+    })
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.dropTable('oficinas');
+    await queryInterface.dropTable('aluno_participa_oficina');
   }
 };

@@ -1,7 +1,7 @@
 const { OficinaRepository } = require('../repositories/OficinaRepository');
 const sequelize = require('sequelize');
 const { BusinessError } = require('../errors/BusinessError');
-const { Professor } = require('../../models/Professor');
+const { Professor } = require('../../models/index');
 
 class OficinaService {
     constructor() {

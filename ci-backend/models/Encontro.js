@@ -1,6 +1,5 @@
 const { DataTypes: Sequelize } = require('sequelize');
 const { sequelize: db } = require('../config/MysqlConnection');
-const { Oficina } = require('./Oficina');
 
 const Encontro = db.define('encontro', {
     id: {
@@ -17,6 +16,8 @@ const Encontro = db.define('encontro', {
             model: 'oficinas',
             key: 'id'
         },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
     },
 
     data_horario_inicio: {
@@ -34,17 +35,12 @@ const Encontro = db.define('encontro', {
                 }
             }
         }
-    },
+    }, 
 
 }, {
     tableName: 'encontros',
     underscored: true,
     timestamps: true,
 });
-
-Encontro.belongsTo(Oficina, {
-    foreignKey: 'oficina_id',
-    as: 'oficina'
-})
 
 module.exports = { Encontro };

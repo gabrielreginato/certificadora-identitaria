@@ -1,6 +1,5 @@
 const { DataTypes: Sequelize } = require('sequelize');
 const { sequelize: db } = require('../config/MysqlConnection');
-const { Professor } = require('./Professor');
 
 const Oficina = db.define('oficina', {
     id: {
@@ -28,16 +27,13 @@ const Oficina = db.define('oficina', {
           model: 'professores',
           key: 'id'
         },
+        onUpdate: 'CASCADE',
+        onDelete: 'RESTRICT'
     }
 }, {
     tableName: 'oficinas',
     underscored: true,
     timestamps: true,
 });
-
-Oficina.belongsTo(Professor, {
-    foreignKey: 'professor_responsavel_id',
-    as: 'professor'
-})
 
 module.exports = { Oficina };

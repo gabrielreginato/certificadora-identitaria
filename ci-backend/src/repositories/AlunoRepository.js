@@ -1,4 +1,4 @@
-const { Aluno } = require('../../models/Aluno');
+const { Aluno } = require('../../models/index');
 
 class AlunoRepository {
     async create(data) {

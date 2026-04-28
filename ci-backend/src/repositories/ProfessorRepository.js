@@ -1,5 +1,5 @@
 const { where } = require('sequelize');
-const { Professor } = require('../../models/Professor');
+const { Professor } = require('../../models/index');
 
 class ProfessorRepository {
     async create(data) {

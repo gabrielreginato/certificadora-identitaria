@@ -18,6 +18,8 @@ module.exports = {
           model: 'oficinas',
           key: 'id'
         },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
       },
 
       data_horario_inicio: {

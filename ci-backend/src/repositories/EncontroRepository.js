@@ -1,4 +1,4 @@
-const { Encontro } = require('../../models/Encontro');
+const { Encontro } = require('../../models/index');
 
 class EncontroRepository {
     async create(data) {

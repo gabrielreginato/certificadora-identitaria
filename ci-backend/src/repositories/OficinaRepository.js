@@ -1,4 +1,4 @@
-const { Oficina } = require('../../models/Oficina');
+const { Oficina } = require('../../models/index');
 
 class OficinaRepository {
     async create(data) {
