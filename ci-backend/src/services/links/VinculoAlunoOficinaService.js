@@ -32,7 +32,7 @@ class VinculoAlunoOficinaService {
 
             if(vinculo.length > 0) throw new BusinessError("Este aluno já está cadastrado nesta oficina.", 409);
 
-            this.repository.create(data);
+            return await this.repository.create(data);
         } catch (error) {
             throw error;
         }

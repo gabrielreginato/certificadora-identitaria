@@ -11,6 +11,7 @@ class ProfessorService {
     async find(filtros) {
         const where = {};
 
+        if(filtros.id) where.id = filtros.id;
         if(filtros.nome) where.nome = { [sequelize.Op.like]: `%${filtros.nome}%` };
         if(filtros.email) where.email = filtros.email;
 

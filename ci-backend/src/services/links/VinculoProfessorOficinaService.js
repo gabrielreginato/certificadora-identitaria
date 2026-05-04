@@ -33,15 +33,11 @@ class VinculoProfessorOficinaService {
             if(oficina[0].dataValues.professor_responsavel_id == data.professor_id)
                 throw new BusinessError("Este professor já é responsável por esta oficina, portanto não pode se inscrever como tutor.", 409);
 
-            console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-            console.log(oficina[0].dataValues)
-            console.log('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-
             const vinculo = await this.find(data);
 
             if(vinculo.length > 0) throw new BusinessError("Este professor já está cadastrado nesta oficina.", 409);
 
-            this.repository.create(data);
+            return await this.repository.create(data);
         } catch (error) {
             throw error;
         }

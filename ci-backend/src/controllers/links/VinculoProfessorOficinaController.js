@@ -41,7 +41,7 @@ route.post('/', async (req, res) => {
 
         console.log(result);
         return res.status(201).json({
-            message: "Inscrição de aluno realizada com sucesso.",
+            message: "Inscrição de professor realizada com sucesso.",
             data: result
         });
     } catch (error) {

@@ -11,6 +11,7 @@ class AlunoService {
     async find(filtros) {
         const where = {};
 
+        if(filtros.id) where.id = filtros.id;
         if(filtros.nome) where.nome = { [sequelize.Op.like]: `%${filtros.nome}%` };
         if(filtros.ra) where.ra = filtros.ra;
         if(filtros.email) where.email = filtros.email;
@@ -23,7 +24,7 @@ class AlunoService {
             console.log(data)
             if(await verifyEmailDuplicate(data.email)) throw new BusinessError("Este e-mail já está em uso.", 409);
 
-            const result = await this.repository.create(data);
+            return await this.repository.create(data);
         } catch(error) {
             if(error instanceof sequelize.UniqueConstraintError) {
                 const messages = {

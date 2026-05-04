@@ -31,6 +31,7 @@ const UpdateAlunoSchema = AlunoSchema
     });
 
 const SearchAlunoSchema = z.object({
+    id: z.string().regex(/^[0-9]+$/).transform(Number).optional(),
     nome: z.string().optional(),
     ra: z.string().optional(),
     email: z.string().optional(),

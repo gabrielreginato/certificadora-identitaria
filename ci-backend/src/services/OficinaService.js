@@ -12,6 +12,7 @@ class OficinaService {
         const where = {};
         const include = [];
         
+        if(filtros.id) where.id = filtros.id;
         if(filtros.titulo) where.titulo = { [sequelize.Op.like]: `%${filtros.titulo}%` };
         if(filtros.tema) where.tema = { [sequelize.Op.like]: `%${filtros.tema}%` };
         if(filtros.professor_responsavel_id) where.professor_responsavel_id = filtros.professor_responsavel_id;

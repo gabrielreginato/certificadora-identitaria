@@ -26,6 +26,7 @@ const UpdateProfessorSchema = ProfessorSchema
     });
 
 const SearchProfessorSchema = z.object({
+    id: z.string().regex(/^[0-9]+$/).transform(Number).optional(),
     nome: z.string().optional(),
     email: z.string().optional(),
     page: z.string().regex(/^[0-9]+$/).transform(Number).optional()

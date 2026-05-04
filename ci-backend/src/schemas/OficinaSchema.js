@@ -38,6 +38,7 @@ const UpdateOficinaSchema = OficinaSchema
     });
 
 const SearchOficinaSchema = z.object({
+    id: z.string().regex(/^[0-9]+$/).transform(Number).optional(),
     titulo: z.string().optional(),
     tema: z.string().optional(),
     professor_responsavel_nome: z.string().optional(),
