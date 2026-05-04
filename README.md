@@ -18,6 +18,18 @@
 <p>Neste projeto, optamos pelo Visual Studio Code como ambiente de desenvolvimento, e Git para o controle de versão.</p>
 <p>Ainda estamos considerando algumas opções acessíveis de hospedagem, como Render e Railway para a API Back-end, e Vercel e Netlify para a API Front-end.</p>
 
+## Organização do Repositório
+
+### Diagramas
+- [Diagrama ER](https://github.com/gabrielreginato/certificadora-identitaria/blob/main/Diagramas/Certificadora%20Identit%C3%A1ria%20-%20Diagrama%20ER.pdf)
+- [Diagrama UML - API Back-end](https://github.com/gabrielreginato/certificadora-identitaria/blob/main/Diagramas/Certificadora%20Identit%C3%A1ria%20-%20Diagrama%20UML%20da%20API%20Back-end.jpg)
+
+### Requisitos do Sistema
+- [Requisitos Funcionais](https://github.com/gabrielreginato/certificadora-identitaria/blob/main/Requisitos%20de%20Usu%C3%A1rio/Requisitos%20Funcionais.md)
+
+### API Back-end
+- [Detalhes e Documentação](https://github.com/gabrielreginato/certificadora-identitaria/blob/main/ci-backend/README.md)
+
 ## Este projeto foi idealizado e desenvolvido por:
 
 - [Ana Beatriz Barreto](https://github.com/anabeatrizbarretot)
