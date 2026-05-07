@@ -10,25 +10,36 @@ module.exports = {
         primaryKey: true,
         autoIncrement: true
       },
+
       nome: {
         type: Sequelize.STRING(100),
         allowNull: false,
       },
-      email: {
-        type: Sequelize.STRING(100),
+
+      usuario_id: {
+        type: Sequelize.INTEGER,
         allowNull: false,
         unique: true,
+        references: {
+          model: 'usuarios',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
       },
+
       ra: {
         type: Sequelize.STRING(10),
         allowNull: false,
         unique: true,
       },
+
       created_at: {
         type: Sequelize.DATE,
         allowNull: false,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
+
       updated_at: {
         type: Sequelize.DATE,
         allowNull: false,

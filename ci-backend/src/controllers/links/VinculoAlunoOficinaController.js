@@ -4,13 +4,13 @@ const { BusinessError } = require('../../errors/BusinessError');
 const { body, query, param } = require('express-validator');
 const { z } = require('zod');
 const { VinculoAlunoOficinaSchema, SearchVinculoAlunoOficinaSchema } = require('../../schemas/links/VinculoAlunoOficinaSchema');
-const { VinculoAlunoOficinaService } = require('../../services/links/VinculoAlunoOficinaService');
+const { VinculoAlunoOficinaService } = require('../../services/index');
 
 const route = express.Router();
 
 const service = new VinculoAlunoOficinaService();
 
-route.get('/', async (req, res) => {
+route.get('/', async (req, res, next) => {
     try {
         const filtros = SearchVinculoAlunoOficinaSchema.parse(req.query);
 
@@ -19,21 +19,11 @@ route.get('/', async (req, res) => {
 
         return res.status(200).json(result);
     } catch (error) {
-        if(error instanceof z.ZodError) {
-            return res.status(400).json({
-                message: "Dados de entrada inválidos.",
-                errors: error.issues.map(err => ({
-                    field: err.path[0],
-                    message: err.message
-                }))
-            });
-        }
-        console.log(error);
-        return res.status(500).json({ message: "Erro interno do servidor."})
+        next(error);
     }
 });
 
-route.post('/', async (req, res) => {
+route.post('/', async (req, res, next) => {
     try {
         const dadosValidados = VinculoAlunoOficinaSchema.parse(req.body);
         
@@ -45,22 +35,7 @@ route.post('/', async (req, res) => {
             data: result
         });
     } catch (error) {
-        if(error instanceof z.ZodError) {
-            return res.status(400).json({
-                message: "Dados de entrada inválidos.",
-                errors: error.issues.map(err => ({
-                    field: err.path[0],
-                    message: err.message
-                }))
-            });
-        }
-
-        if(error instanceof BusinessError) {
-            return res.status(error.statusCode).json({ message: error.message });
-        }
-
-        console.error(error);
-        return res.status(500).json({ message: "Erro interno do servidor."})
+        next(error);
     }
 });
 
@@ -98,7 +73,7 @@ route.post('/', async (req, res) => {
     }
 });*/
 
-route.delete('/:id', async (req, res) => {
+route.delete('/:id', async (req, res, next) => {
     try {
         const { id } = IdentifierSchema.parse(req.params);
 
@@ -107,22 +82,7 @@ route.delete('/:id', async (req, res) => {
 
         return res.status(204).json({});
     } catch (error) {
-        if(error instanceof z.ZodError) {
-            return res.status(400).json({
-                message: "Dados de entrada inválidos.",
-                errors: error.issues.map(err => ({
-                    field: err.path[0],
-                    message: err.message
-                }))
-            });
-        }
-
-        if(error instanceof BusinessError) {
-            return res.status(error.statusCode).json({ message: error.message });
-        }
-
-        console.log(error);
-        return res.status(500).json({ message: "Erro interno do servidor."});
+        next(error);
     }
 });
 

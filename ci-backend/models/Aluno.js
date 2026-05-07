@@ -8,18 +8,28 @@ const Aluno = db.define('aluno', {
         primaryKey: true,
         autoIncrement: true
     },
+
     nome: {
         type: Sequelize.STRING(100),
         allowNull: false,
     },
     
-    email: {
-        type: Sequelize.STRING(100),
-        allowNull: false,
-    },
     ra: {
         type: Sequelize.STRING(10),
         allowNull: false,
+        unique: true,
+    },
+
+    usuario_id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        unique: true,
+        references: {
+          model: 'usuarios',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
     }
 }, {
     tableName: 'alunos',

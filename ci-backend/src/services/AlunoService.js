@@ -1,5 +1,5 @@
 const { BusinessError } = require('../errors/BusinessError');
-const { AlunoRepository } = require('../repositories/AlunoRepository');
+const { AlunoRepository } = require('../repositories/index');
 const sequelize = require('sequelize');
 const { verifyEmailDuplicate } = require('../utils/EmailDuplicatesCheck');
 

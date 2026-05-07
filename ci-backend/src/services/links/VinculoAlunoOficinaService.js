@@ -1,6 +1,8 @@
-const { VinculoAlunoOficinaRepository } = require('../../repositories/links/VinculoAlunoOficinaRepository');
-const { AlunoRepository } = require('../../repositories/AlunoRepository');
-const { OficinaRepository } = require('../../repositories/OficinaRepository');
+const { 
+    VinculoAlunoOficinaRepository,  
+    AlunoRepository,
+    OficinaRepository,
+} = require('../../repositories/index');
 const { BusinessError } = require('../../errors/BusinessError');
 
 class VinculoAlunoOficinaService {

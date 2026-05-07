@@ -1,3 +1,4 @@
+const { Usuario } = require('./Usuario');
 const { Aluno } = require('./Aluno');
 const { Professor } = require('./Professor');
 const { Oficina } = require('./Oficina');
@@ -5,21 +6,32 @@ const { Encontro } = require('./Encontro');
 const { AlunoParticipaOficina } = require('./links/AlunoParticipaOficina');
 const { ProfessorTutoraOficina } = require('./links/ProfessorTutoraOficina'); 
 
+//Relação Professor-Aluno/Usuario
+Aluno.belongsTo(Usuario, {
+    foreignKey: 'usuario_id',
+    as: 'usuario'
+});
+
+Professor.belongsTo(Usuario, {
+    foreignKey: 'usuario_id',
+    as: 'usuario'
+});
+
+Usuario.hasOne(Aluno, { 
+    foreignKey: 'usuario_id', 
+    as: 'perfil_aluno' 
+});
+
+Usuario.hasOne(Professor, { 
+    foreignKey: 'usuario_id', 
+    as: 'perfil_professor' 
+});
+
+//Relação Aluno/Oficina
 Aluno.belongsToMany(Oficina, {
     through: AlunoParticipaOficina,
     foreignKey: 'aluno_id',
     as: 'oficinas'
-});
-
-Professor.belongsToMany(Oficina, {
-    through: ProfessorTutoraOficina,
-    foreignKey: 'professor_id',
-    as: 'oficinas'
-});
-
-Oficina.belongsTo(Professor, {
-    foreignKey: 'professor_responsavel_id',
-    as: 'professor'
 });
 
 Oficina.belongsToMany(Aluno, {
@@ -28,12 +40,25 @@ Oficina.belongsToMany(Aluno, {
     as: 'alunos'
 });
 
+//Relações Professor/Oficina
+Oficina.belongsTo(Professor, {
+    foreignKey: 'professor_responsavel_id',
+    as: 'professor'
+});
+
+Professor.belongsToMany(Oficina, {
+    through: ProfessorTutoraOficina,
+    foreignKey: 'professor_id',
+    as: 'oficinas'
+});
+
 Oficina.belongsToMany(Professor, {
     through: ProfessorTutoraOficina,
     foreignKey: 'oficina_id',
     as: { singular: 'professor', plural: 'professores' }
 });
 
+//Relação Encontro/Oficina
 Encontro.belongsTo(Oficina, {
     foreignKey: 'oficina_id',
     as: 'oficina'
@@ -50,6 +75,7 @@ AlunoParticipaOficina.belongsTo(Aluno, {
 })*/
 
 module.exports = {
+    Usuario,
     Aluno,
     Professor,
     Oficina,

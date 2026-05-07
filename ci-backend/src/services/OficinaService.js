@@ -1,4 +1,4 @@
-const { OficinaRepository } = require('../repositories/OficinaRepository');
+const { OficinaRepository } = require('../repositories/index');
 const sequelize = require('sequelize');
 const { BusinessError } = require('../errors/BusinessError');
 const { Professor } = require('../../models/index');

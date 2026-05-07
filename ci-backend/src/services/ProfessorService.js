@@ -1,4 +1,4 @@
-const { ProfessorRepositor, ProfessorRepository } = require('../repositories/ProfessorRepository');
+const { ProfessorRepositor, ProfessorRepository } = require('../repositories/index');
 const sequelize = require('sequelize');
 const { BusinessError } = require('../errors/BusinessError');
 const { verifyEmailDuplicate } = require('../utils/EmailDuplicatesCheck');

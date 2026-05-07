@@ -1,34 +1,34 @@
 const { DataTypes: Sequelize } = require('sequelize');
 const { sequelize: db } = require('../config/MysqlConnection');
 
-const Professor = db.define('professor', {
+const Usuario = db.define('usuario', {
     id: {
         type: Sequelize.INTEGER,
         allowNull: false,
         primaryKey: true,
         autoIncrement: true
     },
+    
+    email: {
+        type: Sequelize.STRING(100),
+        allowNull: false,
+        unique: true,
+    },
 
-    nome: {
+    senha_hash: {
         type: Sequelize.STRING(100),
         allowNull: false,
     },
-    
-    usuario_id: {
-        type: Sequelize.INTEGER,
+
+    tipo: {
+        type: Sequelize.ENUM('admin', 'professor', 'aluno'),
         allowNull: false,
-        unique: true,
-        references: {
-          model: 'usuarios',
-          key: 'id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
-    }
+        defaultValue: 'aluno'
+    },
 }, {
-    tableName: 'professores',
+    tableName: 'usuarios',
     underscored: true,
     timestamps: true,
 });
 
-module.exports = { Professor };
+module.exports = { Usuario };

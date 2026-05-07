@@ -10,7 +10,7 @@ const route = express.Router();
 
 const service = new AlunoService();
 
-route.get('/', async (req, res) => {
+route.get('/', async (req, res, next) => {
     try {
         const filtros = SearchAlunoSchema.parse(req.query);
 
@@ -19,22 +19,12 @@ route.get('/', async (req, res) => {
 
         return res.status(200).json(result);
     } catch (error) {
-        if(error instanceof z.ZodError) {
-            return res.status(400).json({
-                message: "Dados de entrada inválidos.",
-                errors: error.issues.map(err => ({
-                    field: err.path[0],
-                    message: err.message
-                }))
-            });
-        }
-        console.log(error);
-        return res.status(500).json({ message: "Erro interno do servidor."})
+        next(error);
     }
     
 });
 
-route.post('/', async (req, res) => {
+route.post('/', async (req, res, next) => {
     try {
         const dadosValidados = AlunoSchema.parse(req.body);
         const result = await service.create(dadosValidados);
@@ -46,26 +36,11 @@ route.post('/', async (req, res) => {
             data: result
         });
     } catch (error) {
-        if(error instanceof z.ZodError) {
-            return res.status(400).json({
-                message: "Dados de entrada inválidos.",
-                errors: error.issues.map(err => ({
-                    field: err.path[0],
-                    message: err.message
-                }))
-            });
-        }
-
-        if(error instanceof BusinessError) {
-            return res.status(error.statusCode).json({ message: error.message });
-        }
-
-        console.error(error);
-        return res.status(500).json({ message: "Erro interno do servidor."})
+        next(error);
     }
 });
 
-route.put('/:id', async (req, res) => {
+route.put('/:id', async (req, res, next) => {
     try {
         const { id } = IdentifierSchema.parse(req.params);
         const dadosValidados = UpdateAlunoSchema.parse(req.body);
@@ -78,26 +53,11 @@ route.put('/:id', async (req, res) => {
             message: "Aluno atualizado com sucesso."
         });
     } catch (error) {
-        if(error instanceof z.ZodError) {
-            return res.status(400).json({
-                message: "Dados de entrada inválidos.",
-                errors: error.issues.map(err => ({
-                    field: err.path[0],
-                    message: err.message
-                }))
-            });
-        }
-
-        if(error instanceof BusinessError) {
-            return res.status(error.statusCode).json({ message: error.message });
-        }
-
-        console.log(error);
-        return res.status(500).json({ message: "Erro interno do servidor."});
+        next(error);
     }
 });
 
-route.delete('/:id', async (req, res) => {
+route.delete('/:id', async (req, res, next) => {
     try {
         const { id } = IdentifierSchema.parse(req.params);
 
@@ -106,23 +66,8 @@ route.delete('/:id', async (req, res) => {
 
         return res.status(204).json({});
     } catch (error) {
-        if(error instanceof z.ZodError) {
-            return res.status(400).json({
-                message: "Dados de entrada inválidos.",
-                errors: error.issues.map(err => ({
-                    field: err.path[0],
-                    message: err.message
-                }))
-            });
-        }
-
-        if(error instanceof BusinessError) {
-            return res.status(error.statusCode).json({ message: error.message });
-        }
-
-        console.log(error);
-        return res.status(500).json({ message: "Erro interno do servidor."});
+        next(error);
     }
 });
 
-module.exports = { route }
+module.exports = { route };

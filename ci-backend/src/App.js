@@ -1,22 +1,33 @@
 const express = require('express');
 const cors = require('cors');
-const { route: alunoController } = require('./controllers/AlunoController') ;
-const { route: professorController } = require('./controllers/ProfessorController');
-const { route: oficinaController } = require('./controllers/OficinaController');
-const { route: encontroController } = require('./controllers/EncontroController');
-const { route: vinculoAlunoOficinaController } = require('./controllers/links/VinculoAlunoOficinaController');
-const { route: vinculoProfessorOficinaController } = require('./controllers/links/VinculoProfessorOficinaController');
+const { errorHandler } = require('./middlewares/ErrorHandler');
+
+const { 
+    UsuarioController,
+    AlunoController,
+    ProfessorController,
+    OficinaController,
+    EncontroController,
+    VinculoAlunoOficinaController,
+    VinculoProfessorOficinaController
+} = require('./controllers/index');
 
 const app = express();
 
 app.use(express.json());
 app.use(cors());
 
-app.use('/alunos', alunoController);
-app.use('/professores', professorController);
-app.use('/oficinas', oficinaController);
-app.use('/encontros', encontroController);
-app.use('/vinculo-aluno-oficina', vinculoAlunoOficinaController);
-app.use('/vinculo-professor-oficina', vinculoProfessorOficinaController);
+app.use('/usuarios', UsuarioController);
+
+// Agora a manipulação das tabelas de 'Alunos' e 'Professores' é feita através da rota '/usuarios' 
+//app.use('/alunos', AlunoController);
+//app.use('/professores', ProfessorController);
+
+app.use('/oficinas', OficinaController);
+app.use('/encontros', EncontroController);
+app.use('/vinculo-aluno-oficina', VinculoAlunoOficinaController);
+app.use('/vinculo-professor-oficina', VinculoProfessorOficinaController);
+
+app.use(errorHandler);
 
 app.listen(3000);

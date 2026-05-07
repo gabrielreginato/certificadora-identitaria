@@ -1,8 +1,8 @@
 const { Aluno } = require('../../models/index');
 
 class AlunoRepository {
-    async create(data) {
-        return await Aluno.create(data);
+    async create(data, options) {
+        return await Aluno.create(data, options);
     }
 
     async find(data) {
@@ -15,8 +15,8 @@ class AlunoRepository {
         return await Aluno.update(data, { where: { id: id } });
     }
 
-    async deleteById(id) {
-        return await Aluno.destroy({ where: { id: id }});
+    async deleteById(id, options = {}) {
+        return await Aluno.destroy({ where: { id: id }, ...options});
     }
 }
 

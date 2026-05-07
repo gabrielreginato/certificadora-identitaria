@@ -3,7 +3,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
-    await queryInterface.createTable('professores', { 
+    await queryInterface.createTable('usuarios', { 
       id: {
         type: Sequelize.INTEGER,
         allowNull: false,
@@ -11,23 +11,23 @@ module.exports = {
         autoIncrement: true
       },
 
-      nome: {
+      email: {
         type: Sequelize.STRING(100),
+        allowNull: false,
+        unique: true,
+      },
+
+      senha_hash: {
+        type: Sequelize.STRING(255),
         allowNull: false,
       },
 
-      usuario_id: {
-        type: Sequelize.INTEGER,
+      tipo: {
+        type: Sequelize.ENUM('admin', 'professor', 'aluno'),
         allowNull: false,
-        unique: true,
-        references: {
-          model: 'usuarios',
-          key: 'id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        defaultValue: 'aluno'
       },
-      
+
       created_at: {
         type: Sequelize.DATE,
         allowNull: false,
@@ -43,6 +43,6 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.dropTable('professores');
+    await queryInterface.dropTable('usuarios');
   }
 };

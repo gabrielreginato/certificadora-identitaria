@@ -2,8 +2,8 @@ const { where } = require('sequelize');
 const { Professor } = require('../../models/index');
 
 class ProfessorRepository {
-    async create(data) {
-        return await Professor.create(data);
+    async create(data, options) {
+        return await Professor.create(data, options);
     }
 
     async find(data) {
@@ -14,8 +14,8 @@ class ProfessorRepository {
         return await Professor.update(data, { where: { id: id } })
     }
 
-    async deleteById(id) {
-        return await Professor.destroy({ where: { id: id } });
+    async deleteById(id, options = {}) {
+        return await Professor.destroy({ where: { id: id }, ...options});
     }
 }
 

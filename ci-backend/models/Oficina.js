@@ -28,7 +28,7 @@ const Oficina = db.define('oficina', {
           key: 'id'
         },
         onUpdate: 'CASCADE',
-        onDelete: 'RESTRICT'
+        onDelete: 'CASCADE'
     }
 }, {
     tableName: 'oficinas',

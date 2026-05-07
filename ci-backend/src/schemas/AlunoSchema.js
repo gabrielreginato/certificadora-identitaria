@@ -13,6 +13,13 @@ const AlunoSchema = z.object({
     })
         .email("Formato de e-mail inválido.")
         .max(100, "O e-mail deve ter no máximo 100 carateres."),
+
+    senha: z.string({
+        error: (issue) => issue.input === undefined ? "A senha é obrigatória.": "A senha deve ser uma String."
+    })
+        .max(100, "A senha deve ter no máximo 100 carateres.")
+        .regex(/[0-9]/, "A senha deve conter ao menos um número."),
+
     ra: z.string({
         error: (issue) => issue.input === undefined ? "O RA é obrigatório.": "O RA deve ser uma String."
     })
@@ -35,7 +42,7 @@ const SearchAlunoSchema = z.object({
     nome: z.string().optional(),
     ra: z.string().optional(),
     email: z.string().optional(),
-    page: z.string().regex(/^[0-9]+$/).transform(Number).optional()
+    //page: z.string().regex(/^[0-9]+$/).transform(Number).optional()
 });
 
 module.exports = { AlunoSchema, UpdateAlunoSchema, SearchAlunoSchema };

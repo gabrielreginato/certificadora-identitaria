@@ -1,4 +1,4 @@
-const { EncontroRepository } = require('../repositories/EncontroRepository');
+const { EncontroRepository } = require('../repositories/index');
 const sequelize = require('sequelize');
 const { BusinessError } = require('../errors/BusinessError');
 const { Oficina } = require('../../models/index');
