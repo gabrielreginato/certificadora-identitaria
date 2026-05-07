@@ -31,10 +31,12 @@ const Aluno = db.define('aluno', {
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
     }
+
 }, {
-    tableName: 'alunos',
-    underscored: true,
-    timestamps: true,
-});
+        tableName: 'alunos',
+        underscored: true,
+        timestamps: true,
+    }
+);
 
 module.exports = { Aluno };

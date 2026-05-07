@@ -1,8 +1,8 @@
 const { Usuario } = require('./Usuario');
 const { Aluno } = require('./Aluno');
-const { Professor } = require('./Professor');
 const { Oficina } = require('./Oficina');
 const { Encontro } = require('./Encontro');
+const { Professor } = require('./Professor');
 const { AlunoParticipaOficina } = require('./links/AlunoParticipaOficina');
 const { ProfessorTutoraOficina } = require('./links/ProfessorTutoraOficina'); 
 
@@ -55,7 +55,10 @@ Professor.belongsToMany(Oficina, {
 Oficina.belongsToMany(Professor, {
     through: ProfessorTutoraOficina,
     foreignKey: 'oficina_id',
-    as: { singular: 'professor', plural: 'professores' }
+    as: { 
+        singular: 'professor', 
+        plural: 'professores' 
+    }
 });
 
 //Relação Encontro/Oficina
@@ -64,7 +67,8 @@ Encontro.belongsTo(Oficina, {
     as: 'oficina'
 });
 
-/*AlunoParticipaOficina.belongsTo(Oficina, {
+/*Relacionamentos opcionais da tabela intermediária
+AlunoParticipaOficina.belongsTo(Oficina, {
     foreignKey: 'oficina_id',
     as: 'oficina'
 })
@@ -77,9 +81,9 @@ AlunoParticipaOficina.belongsTo(Aluno, {
 module.exports = {
     Usuario,
     Aluno,
-    Professor,
     Oficina,
     Encontro,
+    Professor,
     AlunoParticipaOficina,
     ProfessorTutoraOficina
-}
+};
