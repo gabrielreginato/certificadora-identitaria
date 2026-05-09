@@ -67,6 +67,62 @@ class EncontroService {
         }
     }
 
+    /*async updateById(id, data) {
+        try {
+            const encontro = await this.encontroRepository.find({ id: id });
+            if(!encontro || encontro.length == 0) throw new BusinessError('Encontro não encontrado.', 409);
+
+            const oficina = await this.oficinaRepository.find({ id: encontro[0].oficina_id });
+            //Improvável
+            //if(!oficina || oficina.length == 0) throw new BusinessError('Oficina não encontrada.', 409);
+
+            if(oficina[0].professor_responsavel_id != data.user.id) throw new BusinessError('Professores podem alterar apenas encontros das próprias oficinas.');
+
+            delete data.user;
+
+            //const dataAtual = (data.data_horario_inicio || data.data_horario_fim) ? new Date() : null;
+            const dataInicio = data.data_horario_inicio ? new Date(data.data_horario_inicio) : null;
+            const dataFim = data.data_horario_fim ? new Date(data.data_horario_fim) : null;
+
+            //Comparação de novas datas de início o fim
+            if(dataInicio && dataFim) {
+                if(dataFim.getTime() <= dataInicio.getTime()) {
+                    throw new BusinessError("A data de término deve ser posterior à data de início.", 409);
+                }
+                    
+                if(
+                    dataFim.getTime() < Date.now() ||
+                    dataInicio.getTime() < Date.now()
+                ) 
+                    throw new BusinessError("Ambas as datas deve ser posteriores à data atual.", 409);
+            }
+            
+            //Comparação de nova data de início e atual data de fim
+            if(dataInicio) {
+                const encontro = await this.find({ id: id });
+                const encontroDataFim = new Date(encontro[0].data_horario_fim).getTime();
+
+                if(encontroDataFim < dataInicio.getTime()) {
+                    throw new BusinessError("A data de término deve ser posterior à data de início.", 409);
+                }
+            }
+
+            //Comparação de nova data de fim e atual data de início
+            if(dataFim) {
+                const encontro = await this.find({ id: id });
+                const encontroDataInicio = new Date(encontro[0].data_horario_inicio).getTime();
+
+                if(dataFim.getTime() < encontroDataInicio) {
+                    throw new BusinessError("A data de término deve ser posterior à data de início.", 409);
+                }
+            }
+
+            return await this.encontroRepository.updateById(id, data);
+        } catch(error) {
+            throw error;
+        }
+    }*/
+
     async updateById(id, data) {
         try {
             const encontro = await this.encontroRepository.find({ id: id });
@@ -80,52 +136,45 @@ class EncontroService {
 
             delete data.user;
 
-            const dataAtual = (data.data_horario_inicio || data.data_horario_fim) ? new Date() : null;
-            const dataInico = data.data_horario_inicio ? new Date(data.data_horario_inicio) : null;
+            //const dataAtual = (data.data_horario_inicio || data.data_horario_fim) ? new Date() : null;
+            const dataInicio = data.data_horario_inicio ? new Date(data.data_horario_inicio) : null;
             const dataFim = data.data_horario_fim ? new Date(data.data_horario_fim) : null;
 
             //Comparação de novas datas de início o fim
-            if(data.data_horario_inicio && data.data_horario_fim) {
-                if(data.data_horario_fim < data.data_horario_inicio) 
+            if(dataInicio && dataFim) {
+                if(dataFim.getTime() <= dataInicio.getTime()) {
                     throw new BusinessError("A data de término deve ser posterior à data de início.", 409);
-
+                }
+                    
                 if(
-                    data.data_horario_fim < Date.now() ||
-                    data.data_horario_inicio < Date.now()
+                    dataFim.getTime() < Date.now() ||
+                    dataInicio.getTime() < Date.now()
                 ) 
                     throw new BusinessError("Ambas as datas deve ser posteriores à data atual.", 409);
             }
             
             //Comparação de nova data de início e atual data de fim
-            if(data.data_horario_inicio) {
+            if(dataInicio) {
                 const encontro = await this.find({ id: id });
-                const encontroDataFim = new Date(encontro[0].data_horario_inicio);
+                const encontroDataFim = new Date(encontro[0].data_horario_fim).getTime();
 
-                if(encontroDataFim < dataInico) {
+                if(encontroDataFim < dataInicio.getTime()) {
                     throw new BusinessError("A data de término deve ser posterior à data de início.", 409);
                 }
             }
 
             //Comparação de nova data de fim e atual data de início
-            if(data.data_horario_fim) {
+            if(dataFim) {
                 const encontro = await this.find({ id: id });
-                const encontroDataInicio = new Date(encontro[0].data_horario_inicio);
+                const encontroDataInicio = new Date(encontro[0].data_horario_inicio).getTime();
 
-                if(dataFim < encontroDataInicio) {
+                if(dataFim.getTime() < encontroDataInicio) {
                     throw new BusinessError("A data de término deve ser posterior à data de início.", 409);
                 }
             }
 
             return await this.encontroRepository.updateById(id, data);
         } catch(error) {
-            /*if(error instanceof sequelize.ForeignKeyConstraintError) {
-                const messages = {
-                    oficina_id: "ID de oficina não encontrado.",
-                }
-
-                throw new BusinessError(messages[error.fields[0]], 409);
-            }*/
-
             throw error;
         }
     }

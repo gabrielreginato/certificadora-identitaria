@@ -4,8 +4,6 @@ const { errorHandler } = require('./middlewares/ErrorHandler');
 
 const { 
     UsuarioController,
-    AlunoController,
-    ProfessorController,
     OficinaController,
     EncontroController,
 } = require('./controllers/index');

@@ -148,7 +148,7 @@ route.post('/inscricao/alunos', authMiddleware, async (req, res, next) => {
 
         console.log(result);
 
-        return res.status(201).json({
+        return res.status(200).json({
             message: "Aluno inscrito com sucesso.",
             data: result
         });
@@ -166,7 +166,7 @@ route.delete('/inscricao/alunos', authMiddleware, async (req, res, next) => {
 
         console.log(result);
 
-        return res.status(201).json({
+        return res.status(200).json({
             message: "Aluno desinscrito com sucesso.",
         });
     } catch(error) {

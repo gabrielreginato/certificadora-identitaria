@@ -46,7 +46,7 @@ route.post('/', authMiddleware, async (req, res, next) => {
     }
 });
 
-route.put('/:id', authMiddleware, async (req, res, next) => {
+/*route.put('/:id', authMiddleware, async (req, res, next) => {
     try {
         const { id } = IdentifierSchema.parse(req.params);
         const dadosValidados = UpdateEncontroSchema.parse(req.body);
@@ -66,7 +66,7 @@ route.put('/:id', authMiddleware, async (req, res, next) => {
     } catch (error) {
         next(error);
     }
-});
+});*/
 
 route.delete('/:id', authMiddleware, async (req, res, next) => {
     try {
