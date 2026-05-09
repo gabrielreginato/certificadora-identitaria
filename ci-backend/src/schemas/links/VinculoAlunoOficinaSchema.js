@@ -16,21 +16,6 @@ const VinculoAlunoOficinaSchema = z.object({
     }
 });
 
-/*const UpdateEncontroSchema = EncontroSchema
-    .partial()
-    .refine((data) => Object.keys(data).length > 0, {
-        message: "Pelo menos um campo deve ser preenchido para atualização."
-    });
-
-const SearchEncontroSchema = z.object({
-    id: z.string().regex(/^[0-9]+$/).transform(Number).optional(),
-    data_horario_inicio: z.string().optional(),
-    data_horario_fim: z.string().optional(),
-    oficina_titulo: z.string().optional(),
-    oficina_id: z.string().regex(/^[0-9]+$/).transform(Number).optional(),
-    page: z.string().regex(/^[0-9]+$/).transform(Number).optional()
-});*/
-
 const SearchVinculoAlunoOficinaSchema = z.object({
     id: z.string().regex(/^[0-9]+$/).transform(Number).optional(),
     oficina_id: z.string().regex(/^[0-9]+$/).transform(Number).optional(),

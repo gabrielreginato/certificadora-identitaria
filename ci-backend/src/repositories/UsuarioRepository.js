@@ -21,8 +21,18 @@ class UsuarioRepository {
         });
     }
 
-    async updateById(id, data) {
-        return await Usuario.update(data, { where: { id: id } });
+    async findByIdWithProfile(id) {
+        return await Usuario.findOne({
+            where: { id },
+            include: [
+                { model: Aluno, as: 'perfil_aluno' },
+                { model: Professor, as: 'perfil_professor'}
+            ]
+        });
+    }
+
+    async updateById(id, data, options = {}) {
+        return await Usuario.update(data, { where: { id: id }, ...options });
     }
 
     async deleteById(id, options = {}) {

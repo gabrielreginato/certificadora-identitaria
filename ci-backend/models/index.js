@@ -27,6 +27,13 @@ Usuario.hasOne(Professor, {
     as: 'perfil_professor' 
 });
 
+
+
+
+
+
+
+
 //Relação Aluno/Oficina
 Aluno.belongsToMany(Oficina, {
     through: AlunoParticipaOficina,
@@ -40,12 +47,54 @@ Oficina.belongsToMany(Aluno, {
     as: 'alunos'
 });
 
-//Relações Professor/Oficina
-Oficina.belongsTo(Professor, {
-    foreignKey: 'professor_responsavel_id',
-    as: 'professor'
+
+
+// Relacionamentos da tabela de vínculo de Alunos
+AlunoParticipaOficina.belongsTo(Aluno, { 
+    foreignKey: 'aluno_id',
+    as: 'aluno' 
 });
 
+AlunoParticipaOficina.belongsTo(Oficina, { 
+    foreignKey: 'oficina_id', 
+    as: 'oficina' 
+});
+
+
+
+
+
+
+// Relacionamentos da tabela de vínculo de Professores
+ProfessorTutoraOficina.belongsTo(Professor, { 
+    foreignKey: 'professor_id', 
+    as: 'professor' 
+});
+ProfessorTutoraOficina.belongsTo(Oficina, { 
+    foreignKey: 'oficina_id', 
+    as: 'oficina' 
+});
+
+
+
+//Relações Professor/Oficina
+/*Oficina.belongsTo(Professor, {
+    foreignKey: 'professor_responsavel_id',
+    as: 'professor'
+});*/
+
+Oficina.belongsTo(Usuario, {
+    foreignKey: 'professor_responsavel_id',
+    as: 'professor_responsavel'
+});
+
+
+
+
+
+
+
+//Tutor
 Professor.belongsToMany(Oficina, {
     through: ProfessorTutoraOficina,
     foreignKey: 'professor_id',
@@ -61,6 +110,7 @@ Oficina.belongsToMany(Professor, {
     }
 });
 
+
 //Relação Encontro/Oficina
 Encontro.belongsTo(Oficina, {
     foreignKey: 'oficina_id',
@@ -75,6 +125,11 @@ AlunoParticipaOficina.belongsTo(Oficina, {
 
 AlunoParticipaOficina.belongsTo(Aluno, {
     foreignKey: 'aluno_id',
+    as: 'aluno'
+})*/
+
+/*AlunoParticipaOficina.hasOne(Aluno, {
+    foreignKey: 'id',
     as: 'aluno'
 })*/
 

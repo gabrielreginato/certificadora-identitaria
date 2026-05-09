@@ -5,6 +5,7 @@ const { body, query, param } = require('express-validator');
 const { z } = require('zod');
 const { EncontroSchema, UpdateEncontroSchema, SearchEncontroSchema } = require('../schemas/EncontroSchema');
 const { EncontroService } = require('../services/EncontroService');
+const { authMiddleware } = require('../middlewares/Auth');
 
 const route = express.Router();
 
@@ -23,9 +24,15 @@ route.get('/', async (req, res, next) => {
     }
 });
 
-route.post('/', async (req, res, next) => {
+route.post('/', authMiddleware, async (req, res, next) => {
     try {
         const dadosValidados = EncontroSchema.parse(req.body);
+        dadosValidados.user = req.user;
+
+        if(req.user.tipo != 'professor') {
+            return res.status(403).json({ message: 'Apenas professores podem criar encontros.' });
+        }
+
         const result = await service.create(dadosValidados);
 
         console.log(result);
@@ -39,10 +46,15 @@ route.post('/', async (req, res, next) => {
     }
 });
 
-route.put('/:id', async (req, res, next) => {
+route.put('/:id', authMiddleware, async (req, res, next) => {
     try {
         const { id } = IdentifierSchema.parse(req.params);
         const dadosValidados = UpdateEncontroSchema.parse(req.body);
+        dadosValidados.user = req.user;
+
+        if(req.user.tipo != 'professor') {
+            return res.status(403).json({ message: 'Apenas professores podem alterar encontros.' });
+        }
 
         const result = await service.updateById(id, dadosValidados);
 
@@ -56,11 +68,16 @@ route.put('/:id', async (req, res, next) => {
     }
 });
 
-route.delete('/:id', async (req, res, next) => {
+route.delete('/:id', authMiddleware, async (req, res, next) => {
     try {
-        const { id } = IdentifierSchema.parse(req.params);
+        const { id: encontroId } = IdentifierSchema.parse(req.params);
+        const userId = req.user.id;
 
-        const result = await service.deleteById(id);
+        if(req.user.tipo != 'professor') {
+            return res.status(403).json({ message: 'Apenas professores podem deletar encontros.' });
+        }
+
+        const result = await service.deleteById(userId, encontroId);
         console.log(result);
 
         return res.status(204).json({});

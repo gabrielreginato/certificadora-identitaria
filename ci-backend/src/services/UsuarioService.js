@@ -107,6 +107,65 @@ class UsuarioService {
         };
     }
 
+    async updateById(id, data) {
+        const t = await dbConnection.transaction();
+
+        try {
+            const usuarioExistente = await this.usuarioRepository.findByIdWithProfile(id);
+
+            if (!usuarioExistente) {
+                throw new BusinessError("Usuário não encontrado.", 404);
+            }
+
+            const authData = {
+                email: data.email || usuarioExistente.email
+            };
+
+            if(data.senha) {
+                authData.senha_hash = await bcrypt.hash(data.senha, 10) || usuario.senha_hash;
+            }
+
+            await this.usuarioRepository.updateById(id, authData, { transaction: t });
+
+            if (usuarioExistente.tipo === 'aluno') {
+                await this.alunoRepository.updateByUserId(id, {
+                    nome: data.nome || usuarioExistente.perfil_aluno.nome,
+                    ra: data.ra || usuarioExistente.perfil_aluno.ra
+                }, { transaction: t });
+            } else if (usuarioExistente.tipo === 'professor') {
+                await this.professorRepository.updateByUserId(id, {
+                    nome: data.nome || usuarioExistente.perfil_professor.nome
+                }, { transaction: t });
+            }
+
+            await t.commit();
+
+            console.log(data);
+
+            const usuarioAtualizado = await this.usuarioRepository.findByIdWithProfile(id);
+            const resultado = usuarioAtualizado.toJSON();
+            delete resultado.senha_hash;
+
+            return resultado;
+        } catch(error) {
+            await t.rollback(); 
+
+            if(error instanceof sequelize.UniqueConstraintError) {
+                const path = error.errors[0].path.split('.').pop();
+
+                const messages = {
+                    email: "Este e-mail já pertence a outro usuário.",
+                    ra: "Este RA já pertence a outro aluno.",
+                    usuario_id: "Este usuário já possui um perfil cadastrado."
+                }
+
+                throw new BusinessError(messages[path] || "Dado duplicado detectado.", 409);
+            }
+
+            throw error;
+        }
+    }
+
     /*async updateById(id, data) {
         try {
             const usuario = await this.repository.find({ id: id });

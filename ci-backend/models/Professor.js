@@ -18,6 +18,7 @@ const Professor = db.define('professor', {
         type: Sequelize.INTEGER,
         allowNull: false,
         unique: true,
+        field: 'usuario_id',
         references: {
           model: 'usuarios',
           key: 'id'

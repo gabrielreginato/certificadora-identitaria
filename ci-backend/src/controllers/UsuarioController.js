@@ -62,6 +62,53 @@ route.post('/login', async (req, res, next) => {
     }
 });
 
+route.put('/alunos/:id', authMiddleware, async (req, res, next) => {
+    try {
+        const { id } = IdentifierSchema.parse(req.params);
+        const dadosValidados = UpdateAlunoSchema.parse(req.body);
+        dadosValidados.role = 'aluno';
+
+        if(req.user.id != id) {
+            return res.status(403).json({ message: 'Apenas a própria conta pode ser atualizada.' });
+        }
+
+        const result = await service.updateById(id, dadosValidados);
+
+        console.log(result);
+
+        return res.status(201).json({
+            message: "Aluno atualizado com sucesso.",
+            data: result
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
+route.put('/professores/:id', authMiddleware, async (req, res, next) => {
+    try {
+        const { id } = IdentifierSchema.parse(req.params);
+        const dadosValidados = UpdateAlunoSchema.parse(req.body);
+        dadosValidados.role = 'professor';
+
+        if(req.user.id != id) {
+            return res.status(403).json({ message: 'Apenas a própria conta pode ser atualizada.' });
+        }
+
+        const result = await service.updateById(id, dadosValidados);
+
+        console.log(result);
+
+        return res.status(201).json({
+            message: "Professor atualizado com sucesso.",
+            data: result
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
+
 route.delete('/:id', authMiddleware, async (req, res, next) => {
     try {
         const { id } = IdentifierSchema.parse(req.params);

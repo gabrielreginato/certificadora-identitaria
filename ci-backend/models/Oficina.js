@@ -24,7 +24,7 @@ const Oficina = db.define('oficina', {
         type: Sequelize.INTEGER,
         allowNull: false,
         references: {
-          model: 'professores',
+          model: 'usuarios',
           key: 'id'
         },
         onUpdate: 'CASCADE',

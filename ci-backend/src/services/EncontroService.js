@@ -1,11 +1,13 @@
-const { EncontroRepository } = require('../repositories/index');
+const { EncontroRepository, UsuarioRepository, OficinaRepository } = require('../repositories/index');
 const sequelize = require('sequelize');
 const { BusinessError } = require('../errors/BusinessError');
 const { Oficina } = require('../../models/index');
 
 class EncontroService {
     constructor() {
-        this.repository = new EncontroRepository();
+        this.encontroRepository = new EncontroRepository();
+        this.usuarioRepository = new UsuarioRepository();
+        this.oficinaRepository = new OficinaRepository();
     }
 
     async find(filtros) {
@@ -26,11 +28,18 @@ class EncontroService {
             as: 'oficinas'
         });
 
-        return await this.repository.find(where);
+        return await this.encontroRepository.find(where);
     }
 
     async create(data) {
         try {
+            const oficina = await this.oficinaRepository.find({ id: data.oficina_id });
+            if(!oficina || oficina.length == 0) throw new BusinessError('Oficina não encontrada.', 409);
+
+            if(oficina[0].professor_responsavel_id != data.user.id) throw new BusinessError('Professores podem adicionar encontros apenas às próprias oficinas.');
+
+            delete data.user;
+
             const dataAtual = new Date();
             const dataInico = new Date(data.data_horario_inicio);
             const dataFim = new Date(data.data_horario_fim);
@@ -44,15 +53,15 @@ class EncontroService {
             ) 
                 throw new BusinessError("Ambas as datas deve ser posteriores à data atual.", 409);
 
-            return await this.repository.create(data);
+            return await this.encontroRepository.create(data);
         } catch(error) {
-            if(error instanceof sequelize.ForeignKeyConstraintError) {
+            /*if(error instanceof sequelize.ForeignKeyConstraintError) {
                 const messages = {
                     oficina_id: "ID de oficina não encontrado.",
                 }
 
                 throw new BusinessError(messages[error.fields[0]], 409);
-            }
+            }*/
 
             throw error;
         }
@@ -60,6 +69,17 @@ class EncontroService {
 
     async updateById(id, data) {
         try {
+            const encontro = await this.encontroRepository.find({ id: id });
+            if(!encontro || encontro.length == 0) throw new BusinessError('Encontro não encontrado.', 409);
+
+            const oficina = await this.oficinaRepository.find({ id: encontro[0].oficina_id });
+            //Improvável
+            //if(!oficina || oficina.length == 0) throw new BusinessError('Oficina não encontrada.', 409);
+
+            if(oficina[0].professor_responsavel_id != data.user.id) throw new BusinessError('Professores podem alterar apenas encontros das próprias oficinas.');
+
+            delete data.user;
+
             const dataAtual = (data.data_horario_inicio || data.data_horario_fim) ? new Date() : null;
             const dataInico = data.data_horario_inicio ? new Date(data.data_horario_inicio) : null;
             const dataFim = data.data_horario_fim ? new Date(data.data_horario_fim) : null;
@@ -96,28 +116,41 @@ class EncontroService {
                 }
             }
 
-            return await this.repository.updateById(id, data);
+            return await this.encontroRepository.updateById(id, data);
         } catch(error) {
-            if(error instanceof sequelize.ForeignKeyConstraintError) {
+            /*if(error instanceof sequelize.ForeignKeyConstraintError) {
                 const messages = {
                     oficina_id: "ID de oficina não encontrado.",
                 }
 
                 throw new BusinessError(messages[error.fields[0]], 409);
-            }
+            }*/
 
             throw error;
         }
     }
 
-    async deleteById(id) {
-        const deleted = await this.repository.deleteById(id);
+    async deleteById(userId, encontroId) {
+        try {
+            const encontro = await this.encontroRepository.find({ id: encontroId });
+            if(!encontro || encontro.length == 0) throw new BusinessError('Encontro não encontrado.', 409);
 
-        if(deleted == 0) {
-            throw new BusinessError("ID não encontrado.", 404);
+            const oficina = await this.oficinaRepository.find({ id: encontro[0].oficina_id });
+            //Improvável
+            //if(!oficina || oficina.length == 0) throw new BusinessError('Oficina não encontrada.', 409);
+
+            if(oficina[0].professor_responsavel_id != userId) throw new BusinessError('Professores podem deletar apenas encontros das próprias oficinas.');
+
+            const deleted = await this.encontroRepository.deleteById(encontroId);
+
+            if(deleted == 0) {
+                throw new BusinessError("ID não encontrado.", 404);
+            }
+
+            return deleted;
+        } catch(error) {
+            throw(error);
         }
-
-        return deleted;
     }
 }
 

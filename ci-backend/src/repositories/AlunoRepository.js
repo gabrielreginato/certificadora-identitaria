@@ -11,8 +11,15 @@ class AlunoRepository {
         });
     }
 
-    async updateById(id, data) {
-        return await Aluno.update(data, { where: { id: id } });
+    async updateById(id, data, options = {}) {
+        return await Aluno.update(data, { where: { id: id }, ...options });
+    }
+
+    async updateByUserId(usuarioId, data, options = {}) {
+        return await Aluno.update(data, { 
+            where: { usuario_id: usuarioId }, 
+            ...options 
+        });
     }
 
     async deleteById(id, options = {}) {

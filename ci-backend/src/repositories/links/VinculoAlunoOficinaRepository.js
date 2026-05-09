@@ -9,9 +9,10 @@ class VinculoAlunoOficinaRepository {
         return oficina.addAluno(aluno);
     }
 
-    async find(data) {
+    async find(where, options = {}) {
         return await AlunoParticipaOficina.findAll({
-            where: data,
+            where,
+            ...options
         });
     }
 

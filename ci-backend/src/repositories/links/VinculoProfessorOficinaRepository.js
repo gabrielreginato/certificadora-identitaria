@@ -8,9 +8,10 @@ class VinculoProfessorOficinaRepository {
         return oficina.addProfessor(professor);
     }
 
-    async find(data) {
+    async find(where, options = {}) {
         return await ProfessorTutoraOficina.findAll({
-            where: data,
+            where,
+            ...options
         });
     }
 

@@ -8,8 +8,6 @@ const {
     ProfessorController,
     OficinaController,
     EncontroController,
-    VinculoAlunoOficinaController,
-    VinculoProfessorOficinaController
 } = require('./controllers/index');
 
 const app = express();
@@ -25,8 +23,6 @@ app.use('/usuarios', UsuarioController);
 
 app.use('/oficinas', OficinaController);
 app.use('/encontros', EncontroController);
-app.use('/vinculo-aluno-oficina', VinculoAlunoOficinaController);
-app.use('/vinculo-professor-oficina', VinculoProfessorOficinaController);
 
 app.use(errorHandler);
 

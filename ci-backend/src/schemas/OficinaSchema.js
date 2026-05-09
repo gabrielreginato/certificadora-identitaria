@@ -32,6 +32,7 @@ const OficinaSchema = z.object({
 });
 
 const UpdateOficinaSchema = OficinaSchema
+    .omit({ professor_responsavel_id: true })
     .partial()
     .refine((data) => Object.keys(data).length > 0, {
         message: "Pelo menos um campo deve ser preenchido para atualização."
@@ -45,4 +46,26 @@ const SearchOficinaSchema = z.object({
     page: z.string().regex(/^[0-9]+$/).transform(Number).optional()
 });
 
-module.exports = { OficinaSchema, UpdateOficinaSchema, SearchOficinaSchema };
+const InscricaoOficinaSchema = z.object({
+    oficina_id: z.string({
+        error: (issue) => issue.input === undefined ? "Forneça um ID válido de oficina.": "O ID da oficina deve ser uma String."
+    })
+        .regex(/^[0-9]+$/, "O ID da oficina deve conter apenas números."),
+}, {
+    error: (issue) => {
+        if(issue.input === undefined) return "O corpo da requisição (JSON) é obrigatório.";
+    }
+});
+
+const SearchVinculosSchema = z.object({
+    usuario_id: z.string().regex(/^[0-9]+$/).transform(Number).optional(),
+    oficina_id: z.string().regex(/^[0-9]+$/).transform(Number).optional(),
+}); 
+
+module.exports = { 
+    OficinaSchema, 
+    UpdateOficinaSchema, 
+    SearchOficinaSchema, 
+    InscricaoOficinaSchema,
+    SearchVinculosSchema
+};
