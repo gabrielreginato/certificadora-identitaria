@@ -62,17 +62,12 @@ route.post('/login', async (req, res, next) => {
     }
 });
 
-route.put('/alunos/:id', authMiddleware, async (req, res, next) => {
+route.put('/alunos', authMiddleware, async (req, res, next) => {
     try {
-        const { id } = IdentifierSchema.parse(req.params);
         const dadosValidados = UpdateAlunoSchema.parse(req.body);
         dadosValidados.role = 'aluno';
 
-        if(req.user.id != id) {
-            return res.status(403).json({ message: 'Apenas a própria conta pode ser atualizada.' });
-        }
-
-        const result = await service.updateById(id, dadosValidados);
+        const result = await service.updateById(req.user.id, dadosValidados);
 
         console.log(result);
 
@@ -85,17 +80,12 @@ route.put('/alunos/:id', authMiddleware, async (req, res, next) => {
     }
 });
 
-route.put('/professores/:id', authMiddleware, async (req, res, next) => {
+route.put('/professores', authMiddleware, async (req, res, next) => {
     try {
-        const { id } = IdentifierSchema.parse(req.params);
         const dadosValidados = UpdateAlunoSchema.parse(req.body);
         dadosValidados.role = 'professor';
 
-        if(req.user.id != id) {
-            return res.status(403).json({ message: 'Apenas a própria conta pode ser atualizada.' });
-        }
-
-        const result = await service.updateById(id, dadosValidados);
+        const result = await service.updateById(req.user.id, dadosValidados);
 
         console.log(result);
 
@@ -109,15 +99,9 @@ route.put('/professores/:id', authMiddleware, async (req, res, next) => {
 });
 
 
-route.delete('/:id', authMiddleware, async (req, res, next) => {
+route.delete('/', authMiddleware, async (req, res, next) => {
     try {
-        const { id } = IdentifierSchema.parse(req.params);
-
-        if(req.user.id != id) {
-            return res.status(403).json({ message: 'Apenas a própria conta pode ser deletada.' });
-        }
-
-        const result = await service.deleteById(id);
+        const result = await service.deleteById(req.user.id);
         console.log(result);
 
         return res.status(204).json({});
