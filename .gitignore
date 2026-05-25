@@ -1,0 +1,5 @@
+ci-backend/node_modules/
+ci-backend/.env
+
+ci-frontend/node_modules/
+ci-frontend/.env

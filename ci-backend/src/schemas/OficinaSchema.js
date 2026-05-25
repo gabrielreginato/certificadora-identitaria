@@ -21,10 +21,10 @@ const OficinaSchema = z.object({
         .min(3, "A descrição deve ter no mínimo 3 caracteres.")
         .max(255, "A descrição deve ter no máximo 255 carateres.")
         .nonempty("A descrição tema não deve ser nula."),
-    professor_responsavel_id: z.string({
+    /*professor_responsavel_id: z.string({
         error: (issue) => issue.input === undefined ? "Forneça um ID válido de professor responsável.": "O ID do professor responsável deve ser uma String."
     })
-        .regex(/^[0-9]+$/, "O ID do professor responsável deve conter apenas números."),
+        .regex(/^[0-9]+$/, "O ID do professor responsável deve conter apenas números."),*/
 }, {
     error: (issue) => {
         if(issue.input === undefined) return "O corpo da requisição (JSON) é obrigatório.";

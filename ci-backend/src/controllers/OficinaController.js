@@ -21,6 +21,9 @@ const service = new OficinaService();
 route.get('/', async (req, res, next) => {
     try {
         const filtros = SearchOficinaSchema.parse(req.query);
+        if(!filtros.titulo || filtros.titulo.trim() === '') {
+            delete filtros.titulo;
+        }
 
         const result = await service.find(filtros);
         console.log(result);
@@ -39,9 +42,11 @@ route.post('/', authMiddleware, async (req, res, next) => {
             return res.status(403).json({ message: 'Apenas professores podem criar oficinas.' });
         }
 
-        if(req.user.id != dadosValidados.professor_responsavel_id) {
+        /*if(req.user.id != dadosValidados.professor_responsavel_id) {
             return res.status(403).json({ message: 'Insira seu próprio ID.' });
-        }
+        }*/
+
+        dadosValidados.professor_responsavel_id = req.user.id;
 
         const result = await service.create(dadosValidados);
 

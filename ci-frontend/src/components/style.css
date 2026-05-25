@@ -1,0 +1,151 @@
+@import url("https://fonts.googleapis.com/css2?family=Hammersmith+One&display=swap");
+
+/* GERAL */
+.hammersmithOneRegular {
+  font-family: "Hammersmith One", sans-serif;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  /*align-items: center;*/
+  background-color: rgb(36, 36, 36);
+  width: 100%;
+}
+
+/* HEADER */
+.header {
+  width: 85%;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  justify-content: space-between;
+}
+
+.header img {
+  width: 20rem;
+}
+
+.header a {
+  text-decoration: none;
+  color: white;
+  font-size: 3.5rem;
+  font-weight: 500;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+}
+
+.search-bar input {
+  height: 40px;
+  width: 18rem;
+  font-size: 1.3rem;
+}
+
+.search-bar input:focus {
+  outline: none;
+}
+
+.search-bar button {
+  height: 50px;
+}
+
+/* MAIN */
+.card-grid {
+  width: 80%;
+  align-self: center;
+  display: flex;
+  padding: 3% 0;
+  min-height: 30rem;
+}
+
+/*CARDS*/
+.card {
+  width: 25rem;
+  height: 22rem;
+  margin: 15px 0;
+  padding: 0;
+}
+
+.card .card-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.card .card-content .card-titulo {
+  font-size: 2rem;
+  font-weight: 600;
+  height: 2rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card .card-content .card-descricao {
+  color: text-secondary;
+  font-size: 1.35rem;
+  text-align: justify;
+}
+
+.card .card-media {
+  object-fit: cover;
+  width: 100%;
+}
+
+.card .card-button {
+  background-color: #155dfc;
+  color: white;
+  text-align: center;
+  margin: 0 auto;
+}
+
+/*.page-navigator {
+  align-self: flex-end;
+  display: flex;
+  width: 30%;
+  justify-content: space-between;
+}*/
+
+/* Modal overlay styles */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.modal-container {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  min-width: 320px;
+  max-width: 90%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.modal .modal-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.modal .modal-fields input {
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+
+.modal .modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}

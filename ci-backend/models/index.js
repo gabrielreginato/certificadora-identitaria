@@ -78,15 +78,15 @@ ProfessorTutoraOficina.belongsTo(Oficina, {
 
 
 //Relações Professor/Oficina
-/*Oficina.belongsTo(Professor, {
+Oficina.belongsTo(Professor, {
     foreignKey: 'professor_responsavel_id',
     as: 'professor'
-});*/
+});
 
-Oficina.belongsTo(Usuario, {
+/*Oficina.belongsTo(Usuario, {
     foreignKey: 'professor_responsavel_id',
     as: 'professor_responsavel'
-});
+});*/
 
 
 
