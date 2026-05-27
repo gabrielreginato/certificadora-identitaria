@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import SearchIcon from '@mui/icons-material/Search';
-import './style.css';
-import { usePageContext } from '../contexts/MainContext';
+import '../style.css';
+import { usePageContext } from '../../contexts/MainContext';
 
 export function SearchBar() {
     const { dispatch } = usePageContext();

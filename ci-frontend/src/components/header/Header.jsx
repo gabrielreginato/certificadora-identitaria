@@ -1,42 +1,35 @@
-import { SearchBar } from "../SearchBar";
+import { SearchBar } from "../main/SearchBar";
 import logo from "../../assets/logo.png";
 import "../style.css";
 
 import { useState } from "react";
-import { usePageContext } from '../../contexts/MainContext';
-import { LoginModal } from './modal/LoginModal';
-import { PostOficinaModal } from './modal/PostOficinaModal';
-import { HeaderSnackbar } from './HeaderSnackbar';
-import Button from '@mui/material/Button';
-import UploadIcon from '@mui/icons-material/Upload';
+import { usePageContext } from "../../contexts/MainContext";
+import { LoginModal } from "./modal/LoginModal";
+import { PostOficinaModal } from "./modal/PostOficinaModal";
+import { HeaderSnackbar } from "./HeaderSnackbar";
+import Button from "@mui/material/Button";
+import UploadIcon from "@mui/icons-material/Upload";
 
 async function _login(name, password) {
-    return await fetch(
-        `https://localhost:3000/login`,
-        {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ name, password })
-        }
-    );
+  return await fetch(`https://localhost:3000/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ name, password }),
+  });
 }
 
 async function _post({ data, token }) {
-    return await fetch(
-        'https://localhost:3000/oficinas',
-        {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(data)
-        }
-    );
+  return await fetch("https://localhost:3000/oficinas", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
 }
-
 
 export function Header() {
   const { state } = usePageContext();
@@ -45,24 +38,6 @@ export function Header() {
 
   return (
     <div className="header">
-      {state.token.length === 0 ? (
-        <Button
-          variant="outlined"
-          className="login-button"
-          onClick={() => setShowLoginModal(true)}
-        >
-          Login
-        </Button>
-      ) : (
-        <Button
-          variant="outlined"
-          className="add-button"
-          onClick={() => setShowPostModal(true)}
-        >
-          <UploadIcon></UploadIcon>
-        </Button>
-      )}
-
       <LoginModal
         isOpen={showLoginModal}
         onClose={() => setShowLoginModal(false)}
@@ -76,10 +51,34 @@ export function Header() {
         onOpenLoginModal={() => setShowLoginModal(true)}
       />
 
-      <a href="index.html">
-        <p className="hammersmithOneRegular">Workshop.io</p>
-      </a>
-      <SearchBar />
+      <div className="left-side">
+        <a href="index.html">
+          <p className="hammersmithOneRegular">Workshop.io</p>
+        </a>
+      </div>
+
+      <div className="right-side">
+        <SearchBar />
+
+        {state.token.length === 0 ? (
+          <Button
+            variant="outlined"
+            className="login-button"
+            onClick={() => setShowLoginModal(true)}
+          >
+            Entrar
+          </Button>
+        ) : (
+          <Button
+            variant="outlined"
+            className="add-button"
+            onClick={() => setShowPostModal(true)}
+          >
+            <UploadIcon></UploadIcon>
+          </Button>
+        )}
+      </div>
+
       <HeaderSnackbar />
     </div>
   );

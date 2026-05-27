@@ -1,7 +1,7 @@
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 
-import { usePageContext } from "../contexts/MainContext";
+import { usePageContext } from "../../contexts/MainContext";
 import { OficinaCard } from "./OficinaCard";
 
 export function OficinasGrid() {
@@ -15,7 +15,7 @@ export function OficinasGrid() {
         </Typography>
       )}
 
-      <Grid  container spacing={3} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+      <Grid  container spacing={3} sx={{ display: 'flex', justifyContent: 'space-arround' }}>
         {state.oficinas.map((oficina, index) => (
           <Grid
             className="card-grid-content"

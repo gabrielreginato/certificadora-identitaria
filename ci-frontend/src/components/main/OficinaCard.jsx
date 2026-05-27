@@ -4,9 +4,9 @@ import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import CardActions from '@mui/material/CardActions';
-import placeholderImg from '../assets/placeholder.png';
+import placeholderImg from '../../assets/placeholder.png';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import './style.css';
+import '../style.css';
 
 export function OficinaCard(oficina) {
     return (

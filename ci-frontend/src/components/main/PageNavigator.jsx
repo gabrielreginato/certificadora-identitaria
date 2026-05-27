@@ -1,7 +1,7 @@
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import { usePageContext } from '../contexts/MainContext';
-import './style.css';
+import { usePageContext } from '../../contexts/MainContext';
+import '../style.css';
 
 export function PageNavigator() {
     const { state, dispatch } = usePageContext();
