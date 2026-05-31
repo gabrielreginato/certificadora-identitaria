@@ -4,12 +4,18 @@ const initialState = {
   oficinas: [],
   page: 0,
   titleParam: "",
-  token: "",
-  role: "",
   headerSnackbar: {
     isOpen: false,
     message: "No results",
   },
+  accountData: {
+    token: localStorage.getItem("token") || "",
+    role: localStorage.getItem("role") || "",
+    name: localStorage.getItem("name") || "",
+    email: localStorage.getItem("email") || "",
+    usuarioId: localStorage.getItem("usuarioId") || "",
+    perfilId: localStorage.getItem("perfilId") || "",
+  }
 };
 
 function reducer(state, action) {
@@ -19,11 +25,9 @@ function reducer(state, action) {
     case "SET_PAGE":
       return { ...state, page: action.payload };
     case "SET_TITLE_PARAM":
-      return { ...state, titleParam: `&title=${action.payload}` };
-    case "SET_TOKEN":
-      return { ...state, token: action.payload };
-    case "SET_ROLE":
-      return { ...state, role: action.payload };
+      return { ...state, titleParam: action.payload };
+    case "SET_ACCOUNT_DATA":
+      return { ...state, accountData: action.payload };
     case "SET_HEADER_SNACKBAR":
       return { ...state, headerSnackbar: action.payload };
     default:
@@ -42,7 +46,7 @@ export function PageProvider({ children }) {
         .then((res) => res.json())
         .then((res) => {
           dispatch({ type: "SET_OFICINAS", payload: res });
-          //console.log(res)
+          console.log(res)
         });
     }
     getOficinas();

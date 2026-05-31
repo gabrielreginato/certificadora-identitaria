@@ -11,6 +11,13 @@
   /*align-items: center;*/
   background-color: #F1F7FF;
   width: 100%;
+  min-height: 100vh;
+}
+
+.app-main {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 /* HEADER */
@@ -58,6 +65,7 @@
   font-size: 1.2rem;
 }
 
+
 .search-bar {
   display: flex;
   align-items: center;
@@ -66,7 +74,13 @@
 .search-bar input {
   height: 40px;
   width: 18rem;
-  font-size: 1.3rem;
+  font-size: 1.2rem;
+  color: #948484;
+  background-color: #F1F7FF;
+  border: none;
+  border-radius: 5px;
+  padding: 0 1rem;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .search-bar input:focus {
@@ -74,7 +88,18 @@
 }
 
 .search-bar button {
-  height: 50px;
+  background-color: white;
+  color: #155DFC;
+  border: none;
+  border-radius: 5px;
+  height: 2.6rem;
+  width: 3.5rem;
+  transition: .3s;
+}
+
+.search-bar button:hover {
+  cursor: pointer;
+  background-color: #f0f0f0;
 }
 
 
@@ -108,9 +133,9 @@
 }
 
 .card .card-content .card-titulo {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 600;
-  height: 2rem;
+  height: 2.5rem;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -118,8 +143,19 @@
 
 .card .card-content .card-descricao {
   color: text-secondary;
-  font-size: 1.35rem;
+  font-size: 1rem;
   text-align: justify;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: wrap;
+
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+
+  line-height: 1.5;
+
+  height: 3rem;
 }
 
 .card .card-media {

@@ -25,7 +25,7 @@ export function SearchBar() {
                 setSearchValue(e.target.value);
                 setOutline('white');
             }}
-            placeholder={outline == 'red' && 'Insira um título!'}
+            placeholder={outline == 'red' ? 'Insira um título!' : 'Encontre oficinas por título...'}
             style={{boxShadow: `0 0 0 1px ${outline}`}}
             onKeyDown={(e) => {
                 if(e.key === 'Enter') {

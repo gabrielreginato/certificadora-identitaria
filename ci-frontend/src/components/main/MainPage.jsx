@@ -7,7 +7,7 @@ import '../style.css';
 
 export function MainPage() {
     return <div className="body">
-        <PageProvider>
+        <PageProvider className="app-main">
             <Header />
             <div className="main">
                 <OficinasGrid />

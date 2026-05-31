@@ -6,7 +6,8 @@ import { useHeaderSnackbar } from "../HeaderSnackbar";
 
 export function LoginModal({ isOpen, onClose, onLogin }) {
   const { dispatch } = usePageContext();
-  const [nameValue, setNameValue] = useState("");
+  const { state } = usePageContext();
+  const [emailValue, setEmailValue] = useState("");
   const [passValue, setPassValue] = useState("");
   const [failMessage, setFailMessage] = useState("");
 
@@ -19,11 +20,11 @@ export function LoginModal({ isOpen, onClose, onLogin }) {
         <div className="email-field">
           <h3>E-mail</h3>
           <input
-            type="text"
+            type="email"
             placeholder="E-mail"
-            value={nameValue}
+            value={emailValue}
             onChange={(e) => {
-              setNameValue(e.target.value);
+              setEmailValue(e.target.value);
             }}
           />
         </div>
@@ -45,7 +46,7 @@ export function LoginModal({ isOpen, onClose, onLogin }) {
           onClick={() => {
             onClose();
             setFailMessage("");
-            setNameValue("");
+            setEmailValue("");
             setPassValue("");
           }}
           className="cancel-button"
@@ -53,20 +54,54 @@ export function LoginModal({ isOpen, onClose, onLogin }) {
           {" "}
           Cancelar
         </button>
+
         <button
           onClick={() => {
-            onLogin(nameValue, passValue).then((res) => {
+            onLogin(emailValue, passValue).then((res) => {
               if (res.status == 200) {
                 res.json().then((body) => {
-                  dispatch({ type: "SET_TOKEN", payload: body.token });
+                  dispatch({
+                    type: "SET_ACCOUNT_DATA",
+                    payload: {
+                      ...state.accountData,
+                      token: body.token,
+                      role: body.usuario.tipo,
+                      email: body.usuario.email,
+                      usuarioId: body.usuario.id,
+                      perfilId:
+                        body.usuario.tipo == "professor"
+                          ? body.usuario.perfil_professor.id
+                          : body.usuario.perfil_aluno.id,
+                      name:
+                        body.usuario.tipo == "professor"
+                          ? body.usuario.perfil_professor.nome
+                          : body.usuario.perfil_aluno.nome,
+                    },
+                  });
                   localStorage.setItem("token", body.token);
+                  localStorage.setItem("role", body.usuario.tipo);
+                  localStorage.setItem("usuarioId", body.usuario.id);
+                  localStorage.setItem("email", body.usuario.email);
+                  localStorage.setItem(
+                    "name",
+                    body.usuario.tipo == "professor"
+                      ? body.usuario.perfil_professor.nome
+                      : body.usuario.perfil_aluno.nome,
+                  );
+                  localStorage.setItem(
+                    "perfilId",
+                    body.usuario.tipo == "professor"
+                      ? body.usuario.perfil_professor.id
+                      : body.usuario.perfil_aluno.id,
+                  );
                 });
                 onClose();
                 setFailMessage("");
-                setNameValue("");
+                setEmailValue("");
                 setPassValue("");
                 showMessage("Loged successfuly");
               } else {
+                console.log(res);
                 res.json().then((body) => setFailMessage(body.description));
               }
             });

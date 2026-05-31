@@ -9,19 +9,27 @@ import { PostOficinaModal } from "./modal/PostOficinaModal";
 import { HeaderSnackbar } from "./HeaderSnackbar";
 import Button from "@mui/material/Button";
 import UploadIcon from "@mui/icons-material/Upload";
+import Avatar from "@mui/material/Avatar";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import ListItemButtom from "@mui/material/ListItemButton";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import LogoutIcon from '@mui/icons-material/Logout';
+import PersonIcon from '@mui/icons-material/Person';
 
-async function _login(name, password) {
-  return await fetch(`https://localhost:3000/login`, {
+async function _login(email, password) {
+  return await fetch(`http://localhost:3000/usuarios/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ name, password }),
+    body: JSON.stringify({ email, senha: password }),
   });
 }
 
 async function _post({ data, token }) {
-  return await fetch("https://localhost:3000/oficinas", {
+  return await fetch("http://localhost:3000/oficinas", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -32,23 +40,59 @@ async function _post({ data, token }) {
 }
 
 export function Header() {
+  const { dispatch } = usePageContext();
   const { state } = usePageContext();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showPostModal, setShowPostModal] = useState(false);
 
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const logOut = () => {
+    localStorage.setItem("token", "");
+    localStorage.setItem("role", "");
+    localStorage.setItem("usuarioId", "");
+    localStorage.setItem("email", "");
+    localStorage.setItem("name", "");
+    localStorage.setItem("perfilId", "");
+
+    dispatch({
+      type: "SET_ACCOUNT_DATA",
+      payload: {
+        ...state.accountData,
+        token: "",
+        role: "",
+        email: "",
+        usuarioId: "",
+        perfilId: "",
+        name: "",
+      },
+    });
+
+    window.location.reload(); 
+  };
+
   return (
     <div className="header">
-      <LoginModal
-        isOpen={showLoginModal}
-        onClose={() => setShowLoginModal(false)}
-        onLogin={_login}
-      />
-
       <PostOficinaModal
         isOpen={showPostModal}
         onClose={() => setShowPostModal(false)}
         onPost={_post}
         onOpenLoginModal={() => setShowLoginModal(true)}
+      />
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onLogin={_login}
       />
 
       <div className="left-side">
@@ -60,7 +104,7 @@ export function Header() {
       <div className="right-side">
         <SearchBar />
 
-        {state.token.length === 0 ? (
+        {state.accountData.token.length === 0 ? (
           <Button
             variant="outlined"
             className="login-button"
@@ -69,14 +113,87 @@ export function Header() {
             Entrar
           </Button>
         ) : (
-          <Button
+          <>
+            <ListItemButtom
+              onClick={handleClick}
+              sx={{
+                borderRadius: "10px",
+                bgcolor: "#F1F7FF",
+                "&:hover": {
+                  bgcolor: "#d8e1ec",
+                },
+              }}
+            >
+              <Avatar
+                className="avatar"
+                sx={{
+                  bgcolor: "#155DFC",
+                  width: 40,
+                  height: 40,
+                }}
+              >
+                {state.accountData.name[0].toUpperCase()}
+              </Avatar>
+              <Box
+                ml={2}
+                sx={{
+                  paddingX: 1.5,
+                }}
+              >
+                <Typography
+                  variant="subtitle1"
+                  sx={{
+                    fontWeight: "500",
+                    color: "#212121",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {state.accountData.name}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: "#212121",
+                  }}
+                >
+                  {state.accountData.role == "professor"
+                    ? "Professor"
+                    : "Aluno"}
+                </Typography>
+              </Box>
+            </ListItemButtom>
+            <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+              <MenuItem
+                onClick={() => {
+                  handleClose();
+                }}
+                sx={{mb: 3, mt: 1}}
+              >
+                <PersonIcon sx={{paddingRight: "1rem"}}/>
+                Meu perfil
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  handleClose();
+                  logOut();
+                }}
+              >
+                <LogoutIcon sx={{paddingRight: "1rem", color: "red"}}/>
+                Sair
+              </MenuItem>
+            </Menu>
+          </>
+        )}
+        {/*(<Button
             variant="outlined"
             className="add-button"
             onClick={() => setShowPostModal(true)}
           >
             <UploadIcon></UploadIcon>
           </Button>
-        )}
+        )*/}
       </div>
 
       <HeaderSnackbar />
