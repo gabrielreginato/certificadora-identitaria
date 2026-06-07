@@ -15,7 +15,9 @@ const initialState = {
     email: localStorage.getItem("email") || "",
     usuarioId: localStorage.getItem("usuarioId") || "",
     perfilId: localStorage.getItem("perfilId") || "",
-  }
+    ra: localStorage.getItem("ra") || "",
+  },
+  oficinasVinculadas: [],
 };
 
 function reducer(state, action) {
@@ -30,6 +32,8 @@ function reducer(state, action) {
       return { ...state, accountData: action.payload };
     case "SET_HEADER_SNACKBAR":
       return { ...state, headerSnackbar: action.payload };
+    case "SET_OFICINAS_VINCULADAS":
+      return { ...state, oficinasVinculadas: action.payload }; 
     default:
       return state;
   }
@@ -49,6 +53,7 @@ export function PageProvider({ children }) {
           console.log(res)
         });
     }
+
     getOficinas();
     window.scrollTo(0, 0);
   }, [state.page, state.titleParam]);

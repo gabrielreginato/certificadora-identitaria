@@ -51,7 +51,6 @@ export function LoginModal({ isOpen, onClose, onLogin }) {
           }}
           className="cancel-button"
         >
-          {" "}
           Cancelar
         </button>
 
@@ -94,6 +93,12 @@ export function LoginModal({ isOpen, onClose, onLogin }) {
                       ? body.usuario.perfil_professor.id
                       : body.usuario.perfil_aluno.id,
                   );
+                  localStorage.setItem(
+                    "ra",
+                    body.usuario.tipo == "aluno"
+                      ? body.usuario.perfil_aluno.ra
+                      : ""
+                  );
                 });
                 onClose();
                 setFailMessage("");
@@ -108,7 +113,6 @@ export function LoginModal({ isOpen, onClose, onLogin }) {
           }}
           className="login-button"
         >
-          {" "}
           Entrar
         </button>
       </div>

@@ -15,8 +15,8 @@ import Box from "@mui/material/Box";
 import ListItemButtom from "@mui/material/ListItemButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import LogoutIcon from '@mui/icons-material/Logout';
-import PersonIcon from '@mui/icons-material/Person';
+import LogoutIcon from "@mui/icons-material/Logout";
+import PersonIcon from "@mui/icons-material/Person";
 
 async function _login(email, password) {
   return await fetch(`http://localhost:3000/usuarios/login`, {
@@ -39,7 +39,7 @@ async function _post({ data, token }) {
   });
 }
 
-export function Header() {
+export function Header({ page }) {
   const { dispatch } = usePageContext();
   const { state } = usePageContext();
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -78,7 +78,7 @@ export function Header() {
       },
     });
 
-    window.location.reload(); 
+    window.location.reload();
   };
 
   return (
@@ -96,13 +96,13 @@ export function Header() {
       />
 
       <div className="left-side">
-        <a href="index.html">
+        <a href="/">
           <p className="hammersmithOneRegular">Workshop.io</p>
         </a>
       </div>
 
       <div className="right-side">
-        <SearchBar />
+        {page === "main" && <SearchBar />}
 
         {state.accountData.token.length === 0 ? (
           <Button
@@ -165,22 +165,26 @@ export function Header() {
               </Box>
             </ListItemButtom>
             <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-              <MenuItem
-                onClick={() => {
-                  handleClose();
-                }}
-                sx={{mb: 3, mt: 1}}
-              >
-                <PersonIcon sx={{paddingRight: "1rem"}}/>
-                Meu perfil
-              </MenuItem>
+              {page != "perfil" && (
+                <MenuItem
+                  onClick={() => {
+                    handleClose();
+                    window.location.href = "/perfil";
+                  }}
+                  sx={{ mb: 3, mt: 1 }}
+                >
+                  <PersonIcon sx={{ paddingRight: "1rem" }} />
+                  Meu perfil
+                </MenuItem>
+              )}
               <MenuItem
                 onClick={() => {
                   handleClose();
                   logOut();
+                  window.location.href = "/";
                 }}
               >
-                <LogoutIcon sx={{paddingRight: "1rem", color: "red"}}/>
+                <LogoutIcon sx={{ paddingRight: "1rem", color: "red" }} />
                 Sair
               </MenuItem>
             </Menu>

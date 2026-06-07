@@ -8,13 +8,13 @@
 .body {
   display: flex;
   flex-direction: column;
-  /*align-items: center;*/
   background-color: #F1F7FF;
   width: 100%;
   min-height: 100vh;
 }
 
 .app-main {
+  flex:1;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -112,7 +112,7 @@
 }
 
 .card-grid {
-  max-width: 66%;
+  max-width: 68vw;
   align-self: center;
   display: flex;
   padding: 3% 0;
@@ -276,6 +276,64 @@
 .modal .modal-buttons .login-button:hover {
   background-color: #0F3AB9;
   color: white;
+}
+
+.modal .oficina-data-modal {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.modal .oficina-data-modal .close-button {
+  align-items: center;
+  justify-self: right;
+  width: auto;
+}
+
+.modal .oficina-data-modal .close-button {
+  color: rgb(201, 12, 12);
+}
+
+.modal .oficina-data-modal .close-button svg{
+  font-size: 1.5rem;
+}
+
+
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.modal-header h2 {
+  flex: 1;
+  margin: 0;
+  text-align: left;
+  font-size: 1.4rem;
+}
+
+.modal-content {
+  width: 100%;
+  flex: 1;
+}
+
+.modal-content p {
+  text-align: justify;
+}
+
+.modal-content .professor {
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+/*oficina data modal*/
+.modal-actions {
+  width: 100%;
+  display: flex;
+  justify-content: right;
+  align-self: flex-end;
 }
 
 /* FOOTER */

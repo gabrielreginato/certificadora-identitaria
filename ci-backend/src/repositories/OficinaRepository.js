@@ -1,24 +1,35 @@
-const { Oficina } = require('../../models/index');
+const { Oficina, Professor, Usuario } = require("../../models/index");
 
 class OficinaRepository {
-    async create(data) {
-        return await Oficina.create(data);
-    }
+  async create(data) {
+    return await Oficina.create(data);
+  }
 
-    async find(data, include = []) {
-        return await Oficina.findAll({
-            where: data,
-            include: include
-        });
-    }
+  async find(data, include = []) {
+    return await Oficina.findAll({
+      where: data,
+      include: {
+        model: Usuario,
+        as: "professor",
+        attributes: ["id", "email", "tipo"],
+        include: [
+          {
+            model: Professor,
+            as: "perfil_professor",
+            attributes: ["id", "nome"],
+          },
+        ],
+      },
+    });
+  }
 
-    async updateById(id, data) {
-        return await Oficina.update(data, { where: { id: id } });
-    }
+  async updateById(id, data) {
+    return await Oficina.update(data, { where: { id: id } });
+  }
 
-    async deleteById(id) {
-        return await Oficina.destroy({ where: { id: id }});
-    }
+  async deleteById(id) {
+    return await Oficina.destroy({ where: { id: id } });
+  }
 }
 
-module.exports = { OficinaRepository }
+module.exports = { OficinaRepository };

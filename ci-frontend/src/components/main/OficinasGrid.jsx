@@ -1,22 +1,38 @@
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
+import { useState } from "react";
 
 import { usePageContext } from "../../contexts/MainContext";
 import { OficinaCard } from "./OficinaCard";
+import { OficinaDataModal } from "./modal/OficinaDataModal";
 
-export function OficinasGrid() {
+export function OficinasGrid({ oficinas, page = "main" }) {
   const { state } = usePageContext();
+  const [showOficinaDataModal, setShowOficinaDataModal] = useState(false);
+  const [selectedOficina, setSelectedOficina] = useState(null);
+
+  console.log(showOficinaDataModal);
 
   return (
     <div className="card-grid">
-      {state.oficinas.length === 0 && (
+      <OficinaDataModal
+        isOpen={showOficinaDataModal}
+        onClose={() => setShowOficinaDataModal(false)}
+        oficina={selectedOficina}
+      />
+
+      {oficinas.length === 0 && (
         <Typography variant="h5" textAlign="center" mt={4}>
           Fim da visualização...
         </Typography>
       )}
 
-      <Grid  container spacing={3} sx={{ display: 'flex', justifyContent: 'space-arround' }}>
-        {state.oficinas.map((oficina, index) => (
+      <Grid
+        container
+        spacing={3}
+        sx={{ display: "flex", justifyContent: "space-arround" }}
+      >
+        {oficinas.map((oficina, index) => (
           <Grid
             className="card-grid-content"
             item
@@ -26,8 +42,12 @@ export function OficinasGrid() {
             key={index}
           >
             <OficinaCard
-              titulo={oficina.titulo}
-              descricao={oficina.descricao}
+              oficina={oficina}
+              onOpenModal={() => {
+                setShowOficinaDataModal(true);
+                setSelectedOficina(oficina);
+              }}
+              page={page}
             />
           </Grid>
         ))}
