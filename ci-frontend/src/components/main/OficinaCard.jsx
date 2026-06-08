@@ -24,7 +24,7 @@ export function OficinaCard({ oficina, onOpenModal, page = "main" }) {
           alt={`"${oficina.titulo}"'s oficina card`}
         />
         {page == "perfil" &&
-          (state.role == "professor" ? (
+          (state.accountData.role == "professor" ? (
             oficina.professor_responsavel_id == state.accountData.usuarioId ? (
               <p className="card-label professor-label">Professor</p>
             ) : (

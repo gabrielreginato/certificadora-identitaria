@@ -80,12 +80,70 @@ export function OficinaDataModal({ isOpen, onClose, oficina }) {
               className="card-button desinscrever"
               size="large"
               sx={{
-                backgroundColor: '#ffe8e8',
-                color: '#db0000',
-                fontWeight: 'bold',
-                fontWeight: '500'
+                backgroundColor: "#ffe8e8",
+                color: "#db0000",
+                fontWeight: "bold",
+                fontWeight: "500",
               }}
-              onClick={() => {}}
+              onClick={() => {
+                fetch(
+                  `http://localhost:3000/oficinas/inscricao/${role == "professor" ? "professores" : "alunos"}`,
+                  {
+                    method: "DELETE",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${state.accountData.token}`,
+                    },
+                    body: JSON.stringify({
+                      oficina_id: String(oficina.id),
+                    }),
+                  },
+                ).then((res) => {
+                  console.log(res)
+                  if (res.status == 200 || res.status == 201 || res.status == 204) {
+                    /*recarregar página e mostrar mensagem de sucesso na snackbar */
+                    dispatch({
+                      type: "SET_HEADER_SNACKBAR",
+                      payload: {
+                        isOpen: true,
+                        message: "Desinscrição realizada com sucesso!",
+                      },
+                    });
+                    onClose();
+
+                    setTimeout(() => {
+                      window.location.reload();
+                    }, 2000);
+                    
+                  } else if (res.status == 401) {
+                    dispatch({
+                      type: "SET_HEADER_SNACKBAR",
+                      payload: {
+                        isOpen: true,
+                        message:
+                          "Erro ao realizar desinscrição, faça login novamente!",
+                      },
+                    });
+
+                    setTimeout(() => {
+                      dispatch({
+                        type: "SET_HEADER_SNACKBAR",
+                        payload: {
+                          isOpen: false,
+                          message: "",
+                        },
+                      });
+
+                      dispatch({
+                        type: "SET_ACCOUNT_DATA",
+                        payload: {
+                          token: "",
+                        },
+                      });
+                    }, 2000);
+                  }
+                });
+              }}
             >
               <span>Desinscrever-se</span>
             </Button>
@@ -96,11 +154,68 @@ export function OficinaDataModal({ isOpen, onClose, oficina }) {
               className="card-button inscrever"
               size="large"
               sx={{
-                backgroundColor: '#c5ffc5',
-                color: '#008000',
-                fontWeight: '500'
+                backgroundColor: "#c5ffc5",
+                color: "#008000",
+                fontWeight: "500",
               }}
-              onClick={() => {}}
+              onClick={() => {
+                fetch(
+                  `http://localhost:3000/oficinas/inscricao/${role == "professor" ? "professores" : "alunos"}`,
+                  {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${state.accountData.token}`,
+                    },
+                    body: JSON.stringify({
+                      oficina_id: String(oficina.id),
+                    }),
+                  },
+                ).then((res) => {
+                  console.log(res);
+                  if (res.status == 200 || res.status == 201 || res.status == 204) {
+                    /*recarregar página e mostrar mensagem de sucesso na snackbar */
+                    dispatch({
+                      type: "SET_HEADER_SNACKBAR",
+                      payload: {
+                        isOpen: true,
+                        message: "Inscrição realizada com sucesso!",
+                      },
+                    });
+                    onClose();
+
+                    setTimeout(() => {
+                      window.location.reload();
+                    }, 2000);
+                  } else if (res.status == 401) {
+                    dispatch({
+                      type: "SET_HEADER_SNACKBAR",
+                      payload: {
+                        isOpen: true,
+                        message:
+                          "Erro ao realizar inscrição, realize login e tente novamente!",
+                      },
+                    });
+
+                    setTimeout(() => {
+                      dispatch({
+                        type: "SET_HEADER_SNACKBAR",
+                        payload: {
+                          isOpen: false,
+                          message: "",
+                        },
+                      });
+
+                      dispatch({
+                        type: "SET_ACCOUNT_DATA",
+                        payload: {
+                          token: "",
+                        },
+                      });
+                    }, 2000);
+                  }
+                });
+              }}
             >
               <span>Inscrever-se</span>
             </Button>
