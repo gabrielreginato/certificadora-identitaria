@@ -2,7 +2,7 @@ const express = require('express');
 const { UsuarioService } = require('../services/index');
 const { body, query } = require('express-validator');
 const { z } = require('zod');
-const { UsuarioLoginSchema } = require('../schemas/UsuarioSchema');
+const { UsuarioLoginSchema, SearchUsuarioSchema } = require('../schemas/UsuarioSchema');
 const { AlunoSchema, UpdateAlunoSchema, SearchAlunoSchema } = require('../schemas/AlunoSchema');
 const { ProfessorSchema, UpdateProfessorSchema, SearchProfessorSchema } = require('../schemas/ProfessorSchema');
 const { IdentifierSchema } = require('../schemas/IdentifierSchema');
@@ -12,6 +12,19 @@ const { authMiddleware } = require('../middlewares/Auth');
 const route = express.Router();
 
 const service = new UsuarioService();
+
+route.get('/', async (req, res, next) => {
+    try {
+        const filtros = SearchUsuarioSchema.parse(req.query);
+
+        const result = await service.find(filtros);
+        console.log(result);
+
+        return res.status(200).json(result);
+    } catch (error) {
+        next(error);
+    }
+});
 
 route.post('/alunos/signin', async (req, res, next) => {
     try {

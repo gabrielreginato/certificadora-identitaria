@@ -17,6 +17,10 @@ const UsuarioLoginSchema = z.object({
     }
 });
 
+const SearchUsuarioSchema = z.object({
+    id: z.string().regex(/^[0-9]+$/).transform(Number).optional(),
+});
+
 /*const UpdateAlunoSchema = AlunoSchema
     .partial()
     .refine((data) => Object.keys(data).length > 0, {
@@ -31,4 +35,4 @@ const SearchAlunoSchema = z.object({
     //page: z.string().regex(/^[0-9]+$/).transform(Number).optional()
 });*/
 
-module.exports = { UsuarioLoginSchema };
+module.exports = { UsuarioLoginSchema, SearchUsuarioSchema };

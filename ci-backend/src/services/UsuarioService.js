@@ -19,14 +19,21 @@ class UsuarioService {
         this.professorRepository = new ProfessorRepository();
     }
 
-    /*async find(filtros) {
+    async find(filtros) {
         const where = {};
 
         if(filtros.id) where.id = filtros.id;
-        if(filtros.email) where.email = filtros.email;
+        //if(filtros.email) where.email = filtros.email;
 
-        return await this.repository.find(where);
-    }*/
+        /*const res = await this.usuarioRepository.find(where);
+        res.forEach(user => {
+            delete user.senha_hash;
+        });
+
+        return res;*/
+
+        return await this.usuarioRepository.find(where);
+    }
 
     async create(data) {
         const t = await dbConnection.transaction();

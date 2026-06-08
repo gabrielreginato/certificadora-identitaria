@@ -81,6 +81,10 @@ export function Header({ page }) {
     window.location.reload();
   };
 
+  console.log("*************************************************")
+  console.log(state.accountData)
+  console.log("*************************************************")
+
   return (
     <div className="header">
       <PostOficinaModal
@@ -104,7 +108,7 @@ export function Header({ page }) {
       <div className="right-side">
         {page === "main" && <SearchBar />}
 
-        {state.accountData.token.length === 0 ? (
+        {(state.accountData.token === null) ? (
           <Button
             variant="outlined"
             className="login-button"

@@ -7,7 +7,11 @@ class UsuarioRepository {
 
     async find(data) {
         return await Usuario.findAll({
-            where: data
+            where: data,
+            include: [
+                { model: Aluno, as: 'perfil_aluno' },
+                { model: Professor, as: 'perfil_professor'}
+            ]
         });
     }
 

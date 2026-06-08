@@ -7,14 +7,16 @@ import IconButton from "@mui/material/IconButton";
 import Button from "@mui/material/Button";
 
 export function OficinaDataModal({ isOpen, onClose, oficina }) {
-  const { dispatch } = usePageContext();
-  const { state } = usePageContext();
-
+  // Correção: Destruturando juntos para evitar múltiplas chamadas do contexto
+  const { state, dispatch } = usePageContext();
   const { role, usuarioId } = state.accountData;
+
+  const [vinculosTutores, setVinculosTutores] = useState([]);
+  const [vinculosParticipantes, setVinculosParticipantes] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const [tutores, setTutores] = useState([]);
   const [participantes, setParticipantes] = useState([]);
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!isOpen || !oficina?.id) return;
@@ -22,17 +24,50 @@ export function OficinaDataModal({ isOpen, onClose, oficina }) {
     async function carregarDadosModal() {
       setLoading(true);
       try {
+        // 1. Busca os vínculos primeiro
+        const [resVinculosTutores, resVinculosParticipantes] =
+          await Promise.all([
+            fetch(
+              `http://localhost:3000/oficinas/tutores?oficina_id=${oficina.id}`,
+            ).then((r) => r.json()),
+            fetch(
+              `http://localhost:3000/oficinas/participantes?oficina_id=${oficina.id}`,
+            ).then((r) => r.json()),
+          ]);
+
+        const dadosTutores = resVinculosTutores || [];
+        const dadosParticipantes = resVinculosParticipantes || [];
+
+        // Atualiza os estados de vínculos
+        setVinculosTutores(dadosTutores);
+        setVinculosParticipantes(dadosParticipantes);
+
+        // 2. CORREÇÃO: Usa as variáveis locais da resposta (dadosTutores/dadosParticipantes)
+        // em vez de ler o estado do React que ainda não atualizou.
         const [resTutores, resParticipantes] = await Promise.all([
-          fetch(
-            `http://localhost:3000/oficinas/tutores?oficina_id=${oficina.id}`,
-          ).then((r) => r.json()),
-          fetch(
-            `http://localhost:3000/oficinas/participantes?oficina_id=${oficina.id}`,
-          ).then((r) => r.json()),
+          dadosTutores.length > 0
+            ? Promise.all(
+                dadosTutores.map((vinculo) => {
+                  return fetch(
+                    `http://localhost:3000/usuarios?id=${vinculo.professor?.usuario?.id}`,
+                  ).then((r) => r.json());
+                }),
+              )
+            : [],
+          dadosParticipantes.length > 0
+            ? Promise.all(
+                dadosParticipantes.map((vinculo) => {
+                  return fetch(
+                    `http://localhost:3000/usuarios?id=${vinculo.aluno?.usuario?.id}`,
+                  ).then((r) => r.json());
+                }),
+              )
+            : [],
         ]);
 
-        setTutores(resTutores || []);
-        setParticipantes(resParticipantes || []);
+        // Trata os dados finais limpando possíveis arrays aninhados
+        setTutores(resTutores.flat() || []);
+        setParticipantes(resParticipantes.flat() || []);
       } catch (error) {
         console.error("Erro ao carregar dados do modal:", error);
       } finally {
@@ -41,13 +76,14 @@ export function OficinaDataModal({ isOpen, onClose, oficina }) {
     }
 
     carregarDadosModal();
-  }, [isOpen, oficina?.id]);
+  }, [isOpen, oficina?.id]); // Mantido limpo sem loops infinitos
 
+  // Tratamento preventivo com Optional Chaining (?.) para evitar quebras se o dado falhar
   const hasLink =
     role === "aluno"
-      ? participantes.some((p) => p.aluno?.usuario?.id == usuarioId)
+      ? vinculosParticipantes.some((p) => p.aluno?.usuario?.id == usuarioId)
       : oficina?.professor_responsavel_id == usuarioId ||
-        tutores.some((t) => t.professor?.usuario?.id == usuarioId);
+        vinculosTutores.some((t) => t.professor?.usuario?.id == usuarioId);
 
   return (
     <Modal isOpen={isOpen}>
@@ -59,30 +95,88 @@ export function OficinaDataModal({ isOpen, onClose, oficina }) {
             aria-label="delete"
             size="small"
             className="close-button"
-            onClick={() => {
-              onClose();
-            }}
+            onClick={onClose}
           >
             <CancelIcon fontSize="inherit" />
           </IconButton>
         </div>
 
-        <div className="modal-content">
-          <p className="professor">
-            Professor Responsável: {oficina?.professor.perfil_professor.nome}
-          </p>
-          <p>{oficina?.descricao}</p>
-        </div>
+        {/* Feedback visual de carregamento para o usuário */}
+        {loading ? (
+          <div className="modal-content">
+            <p>Carregando dados...</p>
+          </div>
+        ) : (
+          <div className="modal-body-scroll">
+            <div className="modal-content">
+              <p className="professor">
+                Professor Responsável:{" "}
+                {oficina?.professor?.perfil_professor?.nome}
+              </p>
+              <p>{oficina?.descricao}</p>
+
+              <div className="tutores">
+                <h3>
+                  <span>Tutores </span>
+                  {tutores.length > 0 && (
+                    <span className="tutores-num">{tutores.length}</span>
+                  )}
+                </h3>
+                {tutores.length > 0 ? (
+                  <ul>
+                    {tutores.map((tutor) => (
+                      // Acessa a estrutura correta: perfil_professor -> nome
+                      <li key={tutor.id}>
+                        <p className="nome">
+                          {tutor?.perfil_professor?.nome ||
+                            "Professor sem nome"}
+                        </p>{" "}
+                        - {tutor?.email}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>Nenhum tutor inscrito nesta oficina.</p>
+                )}
+              </div>
+
+              <div className="participantes">
+                <h3>
+                  <span>Participantes </span>
+                  {participantes.length > 0 && (
+                    <span className="participantes-num">
+                      {participantes.length}
+                    </span>
+                  )}
+                </h3>
+                {participantes.length > 0 ? (
+                  <ul>
+                    {participantes.map((participante) => (
+                      // Acessa a estrutura correta: perfil_aluno -> nome
+                      <li key={participante.id}>
+                        <p className="nome">
+                          {participante?.perfil_aluno?.nome || "Aluno sem nome"}
+                        </p>{" "}
+                        - {participante?.email}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>Nenhum participante inscrito nesta oficina.</p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="modal-actions">
-          {hasLink && usuarioId != oficina.professor_responsavel_id && (
+          {hasLink && usuarioId != oficina?.professor_responsavel_id && (
             <Button
               className="card-button desinscrever"
               size="large"
               sx={{
                 backgroundColor: "#ffe8e8",
                 color: "#db0000",
-                fontWeight: "bold",
                 fontWeight: "500",
               }}
               onClick={() => {
@@ -99,9 +193,7 @@ export function OficinaDataModal({ isOpen, onClose, oficina }) {
                     }),
                   },
                 ).then((res) => {
-                  console.log(res)
-                  if (res.status == 200 || res.status == 201 || res.status == 204) {
-                    /*recarregar página e mostrar mensagem de sucesso na snackbar */
+                  if ([200, 201, 204].includes(res.status)) {
                     dispatch({
                       type: "SET_HEADER_SNACKBAR",
                       payload: {
@@ -110,11 +202,7 @@ export function OficinaDataModal({ isOpen, onClose, oficina }) {
                       },
                     });
                     onClose();
-
-                    setTimeout(() => {
-                      window.location.reload();
-                    }, 2000);
-                    
+                    setTimeout(() => window.location.reload(), 2000);
                   } else if (res.status == 401) {
                     dispatch({
                       type: "SET_HEADER_SNACKBAR",
@@ -128,18 +216,31 @@ export function OficinaDataModal({ isOpen, onClose, oficina }) {
                     setTimeout(() => {
                       dispatch({
                         type: "SET_HEADER_SNACKBAR",
-                        payload: {
-                          isOpen: false,
-                          message: "",
-                        },
+                        payload: { isOpen: false, message: "" },
                       });
+
+                      localStorage.removeItem("token");
+                      localStorage.removeItem("role");
+                      localStorage.removeItem("email");
+                      localStorage.removeItem("name");
+                      localStorage.removeItem("usuarioId");
+                      localStorage.removeItem("perfilId");
+                      localStorage.removeItem("ra");
 
                       dispatch({
                         type: "SET_ACCOUNT_DATA",
                         payload: {
-                          token: "",
+                          token: null,
+                          role: null,
+                          name: null,
+                          email: null,
+                          usuarioId: null,
+                          perfilId: null,
+                          ra: null,
                         },
                       });
+
+                      window.location.href = "/";
                     }, 2000);
                   }
                 });
@@ -172,9 +273,7 @@ export function OficinaDataModal({ isOpen, onClose, oficina }) {
                     }),
                   },
                 ).then((res) => {
-                  console.log(res);
-                  if (res.status == 200 || res.status == 201 || res.status == 204) {
-                    /*recarregar página e mostrar mensagem de sucesso na snackbar */
+                  if ([200, 201, 204].includes(res.status)) {
                     dispatch({
                       type: "SET_HEADER_SNACKBAR",
                       payload: {
@@ -183,10 +282,7 @@ export function OficinaDataModal({ isOpen, onClose, oficina }) {
                       },
                     });
                     onClose();
-
-                    setTimeout(() => {
-                      window.location.reload();
-                    }, 2000);
+                    setTimeout(() => window.location.reload(), 2000);
                   } else if (res.status == 401) {
                     dispatch({
                       type: "SET_HEADER_SNACKBAR",
@@ -200,18 +296,31 @@ export function OficinaDataModal({ isOpen, onClose, oficina }) {
                     setTimeout(() => {
                       dispatch({
                         type: "SET_HEADER_SNACKBAR",
-                        payload: {
-                          isOpen: false,
-                          message: "",
-                        },
+                        payload: { isOpen: false, message: "" },
                       });
+
+                      localStorage.removeItem("token");
+                      localStorage.removeItem("role");
+                      localStorage.removeItem("email");
+                      localStorage.removeItem("name");
+                      localStorage.removeItem("usuarioId");
+                      localStorage.removeItem("perfilId");
+                      localStorage.removeItem("ra");
 
                       dispatch({
                         type: "SET_ACCOUNT_DATA",
                         payload: {
-                          token: "",
+                          token: null,
+                          role: null,
+                          name: null,
+                          email: null,
+                          usuarioId: null,
+                          perfilId: null,
+                          ra: null,
                         },
                       });
+
+                      window.location.href = "/";
                     }, 2000);
                   }
                 });
