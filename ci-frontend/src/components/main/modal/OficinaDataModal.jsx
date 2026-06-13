@@ -5,6 +5,7 @@ import { usePageContext } from "../../../contexts/MainContext";
 import CancelIcon from "@mui/icons-material/Cancel";
 import IconButton from "@mui/material/IconButton";
 import Button from "@mui/material/Button";
+import BorderColorIcon from "@mui/icons-material/BorderColor";
 
 export function OficinaDataModal({ isOpen, onClose, oficina }) {
   // Correção: Destruturando juntos para evitar múltiplas chamadas do contexto
@@ -89,7 +90,31 @@ export function OficinaDataModal({ isOpen, onClose, oficina }) {
     <Modal isOpen={isOpen}>
       <div className="oficina-data-modal">
         <div className="modal-header">
-          <h2>{oficina?.titulo}</h2>
+          <h2>
+            {oficina?.professor_responsavel_id == usuarioId && (
+              <IconButton
+                aria-label="edit"
+                size="small"
+                className="edit-button"
+                onClick={() => {
+                  dispatch({
+                    type: "SET_IS_UPDATING",
+                    payload: true,
+                  });
+                  dispatch({
+                    type: "SET_SELECTED_OFICINA",
+                    payload: oficina,
+                  });
+
+                  console.log(state.selectedOficina)
+                  onClose();
+                }}
+              >
+                <BorderColorIcon fontSize="inherit" />
+              </IconButton>
+            )}
+            {oficina?.titulo}{" "}
+          </h2>
 
           <IconButton
             aria-label="delete"
@@ -170,6 +195,79 @@ export function OficinaDataModal({ isOpen, onClose, oficina }) {
         )}
 
         <div className="modal-actions">
+          {oficina?.professor_responsavel_id == usuarioId && (
+            <Button
+              className="card-button apagar"
+              size="large"
+              sx={{
+                backgroundColor: "#ffe8e8",
+                color: "#db0000",
+                fontWeight: "500",
+              }}
+              onClick={() => {
+                fetch(`http://localhost:3000/oficinas/${oficina.id}`, {
+                  method: "DELETE",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${state.accountData.token}`,
+                  },
+                }).then((res) => {
+                  if ([200, 201, 204].includes(res.status)) {
+                    dispatch({
+                      type: "SET_HEADER_SNACKBAR",
+                      payload: {
+                        isOpen: true,
+                        message: "Oficina apagada com sucesso!",
+                      },
+                    });
+                    onClose();
+                    setTimeout(() => window.location.reload(), 2000);
+                  } else if (res.status == 401) {
+                    dispatch({
+                      type: "SET_HEADER_SNACKBAR",
+                      payload: {
+                        isOpen: true,
+                        message:
+                          "Sessão expirada, faça login e tente novamente!",
+                      },
+                    });
+
+                    setTimeout(() => {
+                      dispatch({
+                        type: "SET_HEADER_SNACKBAR",
+                        payload: { isOpen: false, message: "" },
+                      });
+
+                      localStorage.removeItem("token");
+                      localStorage.removeItem("role");
+                      localStorage.removeItem("email");
+                      localStorage.removeItem("name");
+                      localStorage.removeItem("usuarioId");
+                      localStorage.removeItem("perfilId");
+                      localStorage.removeItem("ra");
+
+                      dispatch({
+                        type: "SET_ACCOUNT_DATA",
+                        payload: {
+                          token: null,
+                          role: null,
+                          name: null,
+                          email: null,
+                          usuarioId: null,
+                          perfilId: null,
+                          ra: null,
+                        },
+                      });
+
+                      window.location.href = "/";
+                    }, 2000);
+                  }
+                });
+              }}
+            >
+              <span>Apagar Oficina</span>
+            </Button>
+          )}
           {hasLink && usuarioId != oficina?.professor_responsavel_id && (
             <Button
               className="card-button desinscrever"
@@ -289,7 +387,7 @@ export function OficinaDataModal({ isOpen, onClose, oficina }) {
                       payload: {
                         isOpen: true,
                         message:
-                          "Erro ao realizar inscrição, realize login e tente novamente!",
+                          "Sessão expirada, faça login e tente novamente!",
                       },
                     });
 

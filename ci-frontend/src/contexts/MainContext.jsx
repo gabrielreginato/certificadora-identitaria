@@ -18,6 +18,8 @@ const initialState = {
     ra: localStorage.getItem("ra") || null,
   },
   oficinasVinculadas: [],
+  isUpdating: false,
+  selectedOficina: null,
 };
 
 function reducer(state, action) {
@@ -33,7 +35,11 @@ function reducer(state, action) {
     case "SET_HEADER_SNACKBAR":
       return { ...state, headerSnackbar: action.payload };
     case "SET_OFICINAS_VINCULADAS":
-      return { ...state, oficinasVinculadas: action.payload }; 
+      return { ...state, oficinasVinculadas: action.payload };
+    case "SET_IS_UPDATING":
+      return { ...state, isUpdating: action.payload };
+    case "SET_SELECTED_OFICINA":
+      return { ...state, selectedOficina: action.payload };
     default:
       return state;
   }
@@ -50,7 +56,7 @@ export function PageProvider({ children }) {
         .then((res) => res.json())
         .then((res) => {
           dispatch({ type: "SET_OFICINAS", payload: res });
-          console.log(res)
+          console.log(res);
         });
     }
 

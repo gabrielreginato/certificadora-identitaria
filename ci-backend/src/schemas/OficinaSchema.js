@@ -21,6 +21,7 @@ const OficinaSchema = z.object({
         .min(3, "A descrição deve ter no mínimo 3 caracteres.")
         .max(255, "A descrição deve ter no máximo 255 carateres.")
         .nonempty("A descrição tema não deve ser nula."),
+    image_url: z.string().optional()
     /*professor_responsavel_id: z.string({
         error: (issue) => issue.input === undefined ? "Forneça um ID válido de professor responsável.": "O ID do professor responsável deve ser uma String."
     })
@@ -32,7 +33,6 @@ const OficinaSchema = z.object({
 });
 
 const UpdateOficinaSchema = OficinaSchema
-    .omit({ professor_responsavel_id: true })
     .partial()
     .refine((data) => Object.keys(data).length > 0, {
         message: "Pelo menos um campo deve ser preenchido para atualização."

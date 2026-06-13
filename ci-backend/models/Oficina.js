@@ -29,6 +29,10 @@ const Oficina = db.define('oficina', {
         },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE'
+    },
+    image_url: {
+        type: Sequelize.STRING,
+        allowNull: true,
     }
 }, {
     tableName: 'oficinas',

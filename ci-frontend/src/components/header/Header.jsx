@@ -5,7 +5,8 @@ import "../style.css";
 import { useState } from "react";
 import { usePageContext } from "../../contexts/MainContext";
 import { LoginModal } from "./modal/LoginModal";
-import { PostOficinaModal } from "./modal/PostOficinaModal";
+import { CreateOficinaModal } from "./modal/CreateOficinaModal";
+import { UpdateOficinaModal } from "./modal/UpdateOficinaModal";
 import { HeaderSnackbar } from "./HeaderSnackbar";
 import Button from "@mui/material/Button";
 import UploadIcon from "@mui/icons-material/Upload";
@@ -17,6 +18,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
+import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
 
 async function _login(email, password) {
   return await fetch(`http://localhost:3000/usuarios/login`, {
@@ -28,9 +30,20 @@ async function _login(email, password) {
   });
 }
 
-async function _post({ data, token }) {
+async function _post(data, token) {
   return await fetch("http://localhost:3000/oficinas", {
     method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+}
+
+async function _update(data, token) {
+  return await fetch(`http://localhost:3000/oficinas/${data.id}`, {
+    method: "PUT",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
@@ -43,7 +56,7 @@ export function Header({ page }) {
   const { dispatch } = usePageContext();
   const { state } = usePageContext();
   const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showPostModal, setShowPostModal] = useState(false);
+  const [showCreateOficinaModal, setShowCreateOficinaModal] = useState(false);
 
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -81,18 +94,21 @@ export function Header({ page }) {
     window.location.reload();
   };
 
-  console.log("*************************************************")
-  console.log(state.accountData)
-  console.log("*************************************************")
-
   return (
     <div className="header">
-      <PostOficinaModal
-        isOpen={showPostModal}
-        onClose={() => setShowPostModal(false)}
+      <CreateOficinaModal
+        isOpen={showCreateOficinaModal}
+        onClose={() => setShowCreateOficinaModal(false)}
         onPost={_post}
-        onOpenLoginModal={() => setShowLoginModal(true)}
       />
+
+      <UpdateOficinaModal
+        isOpen={state.isUpdating}
+        onClose={() => dispatch({ type: "SET_IS_UPDATING", payload: false })}
+        onUpdate={_update}
+        oficina={state.selectedOficina}
+      />
+
       <LoginModal
         isOpen={showLoginModal}
         onClose={() => setShowLoginModal(false)}
@@ -181,6 +197,19 @@ export function Header({ page }) {
                   Meu perfil
                 </MenuItem>
               )}
+              {(state.accountData.token != null && state.accountData.role == "professor") && (
+                <MenuItem
+                  onClick={() => {
+                    setShowCreateOficinaModal(true);
+                    handleClose();
+                    //window.location.href = "/perfil";
+                  }}
+                  sx={{ mb: 3, mt: 1 }}
+                >
+                  <LocalLibraryIcon sx={{ paddingRight: "1rem", color: "#0000D0" }} />
+                  Criar Oficina
+                </MenuItem>
+              )}
               <MenuItem
                 onClick={() => {
                   handleClose();
@@ -194,14 +223,6 @@ export function Header({ page }) {
             </Menu>
           </>
         )}
-        {/*(<Button
-            variant="outlined"
-            className="add-button"
-            onClick={() => setShowPostModal(true)}
-          >
-            <UploadIcon></UploadIcon>
-          </Button>
-        )*/}
       </div>
 
       <HeaderSnackbar />

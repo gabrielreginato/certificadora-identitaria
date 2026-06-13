@@ -210,17 +210,30 @@
   gap: 2rem;
 }
 
-.modal .modal-fields .email-field,
-.modal .modal-fields .password-field {
+.email-field,
+.password-field,
+.titulo-field,
+.descricao-field,
+.image-field {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: space-between;
 }
 
+.preview-image img {
+  height: 4.5rem;
+  width: 8rem;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.modal-container:has(.titulo-field) {
+  height: 70vh;
+}
+
 .modal .modal-fields h3 {
   align-self: flex-start;
-  color: #364153;
   font-weight: 500;
   font-size: 1rem;
 }
@@ -253,6 +266,8 @@
   border-radius: 8px;
   cursor: pointer;
 }
+
+
 
 .modal .modal-buttons .cancel-button {
   background-color: #f0f0f0;
@@ -322,6 +337,30 @@
 }
 
 .modal .oficina-data-modal .close-button svg {
+  font-size: 1.5rem;
+}
+
+
+.oficina-data-modal h2 {
+  display: flex;
+}
+
+.oficina-data-modal h2 .edit-button {
+  margin-right: 1rem;
+}
+
+
+.modal .oficina-data-modal .edit-button {
+  align-items: center;
+  justify-self: right;
+  width: auto;
+}
+
+.modal .oficina-data-modal .edit-button {
+  color: #0000cf;
+}
+
+.modal .oficina-data-modal .edit-button svg {
   font-size: 1.5rem;
 }
 
