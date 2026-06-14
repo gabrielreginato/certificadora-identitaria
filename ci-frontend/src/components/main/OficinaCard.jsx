@@ -19,7 +19,7 @@ export function OficinaCard({ oficina, onOpenModal, page = "main" }) {
         <CardMedia
           className="card-media"
           component="img"
-          height="160"
+          height="225"
           image={oficina.image_url || placeholderImg}
           fit="cover"
           alt={`"${oficina.titulo}"'s oficina card`}

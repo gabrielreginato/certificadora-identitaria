@@ -106,7 +106,7 @@ export function CreateOficinaModal({ isOpen, onClose, onPost }) {
                   payload: {
                     isOpen: true,
                     message:
-                      "Sessão expirada, realize login e tente novamente!",
+                      "Sessão expirada, faça login e tente novamente!",
                   },
                 });
 

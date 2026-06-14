@@ -19,6 +19,7 @@ const initialState = {
   },
   oficinasVinculadas: [],
   isUpdating: false,
+  isScheduling: false,
   selectedOficina: null,
 };
 
@@ -40,6 +41,8 @@ function reducer(state, action) {
       return { ...state, isUpdating: action.payload };
     case "SET_SELECTED_OFICINA":
       return { ...state, selectedOficina: action.payload };
+    case "SET_IS_SCHEDULING":
+      return { ...state, isScheduling: action.payload };
     default:
       return state;
   }

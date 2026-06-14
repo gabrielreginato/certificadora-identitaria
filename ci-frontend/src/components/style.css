@@ -120,7 +120,7 @@
 /*CARDS*/
 .card {
   width: 25rem;
-  height: 22rem;
+  height: 27rem;
   margin: 15px 0;
   padding: 0;
 }
@@ -214,11 +214,12 @@
 .password-field,
 .titulo-field,
 .descricao-field,
-.image-field {
+.image-field,
+.data-field,
+.hora-field {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: space-between;
 }
 
 .preview-image img {
@@ -232,8 +233,13 @@
   height: 70vh;
 }
 
+.modal-container:has(.data-field) {
+  height: 60vh;
+}
+
 .modal .modal-fields h3 {
   align-self: flex-start;
+  justify-self: flex-start;
   font-weight: 500;
   font-size: 1rem;
 }
@@ -345,23 +351,31 @@
   display: flex;
 }
 
+.oficina-data-modal p {
+  font-size: 1.1rem;
+}
+
 .oficina-data-modal h2 .edit-button {
   margin-right: 1rem;
 }
 
-
 .modal .oficina-data-modal .edit-button {
   align-items: center;
   justify-self: right;
-  width: auto;
+  width: 2.75rem;
 }
 
-.modal .oficina-data-modal .edit-button {
+.modal .oficina-data-modal .edit-button, .add-encontro-button svg {
   color: #0000cf;
 }
 
-.modal .oficina-data-modal .edit-button svg {
+.modal .oficina-data-modal .edit-button svg, .add-encontro-button svg, .delete-encontro-button svg {
   font-size: 1.5rem;
+}
+
+
+.encontro-data-with-margin {
+  margin-left: 1.5rem;
 }
 
 .modal-header {
@@ -392,15 +406,28 @@
   margin-bottom: 1rem;
 }
 
+.participantes, .tutores, .encontros {
+  margin-top: 3rem;
+}
 
-.tutores h3, .participantes h3 {
-    text-align: left;
-    display: flex;
-    justify-content: space-between;
+.encontros {
+  margin-bottom: 5rem;
+}
+
+.encontros h3 .tipo1 {
+  margin-left: 1rem;
 }
 
 
-.tutores h3 .tutores-num, .participantes h3 .participantes-num {
+.tutores h3, .participantes h3, .encontros h3 {
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
+.tutores h3 .tutores-num, .participantes h3 .participantes-num, .encontros h3 .encontros-num {
   font-weight: 400;
   border-radius: 50%;
   padding-left: .6rem;
@@ -417,17 +444,22 @@
   background-color: #FFDAFF;
 }
 
-.tutores ul li, .participantes ul li {
+.encontros h3 .encontros-num {
+  color: #193CB8;
+  background-color: #DBEAFE;
+}
+
+.tutores ul li, .participantes ul li, .encontros ul li {
     list-style-type: none;
     text-align: left;
     line-height: 3rem;
 }
 
-.tutores li p, .participantes li p {
+.tutores li p, .participantes li p, .encontros li p {
     display: inline;
 }
 
-.tutores li .nome, .participantes li .nome {
+.tutores li .nome, .participantes li .nome, .encontro-data, .encontro-data-with-margin {
     font-weight: bold;
 }
 
@@ -445,7 +477,25 @@
     border-radius: 10px;
 }
 
+.encontro-inicio-hora {
+  margin: 0 .75rem 0 3rem;
+}
 
+.encontro-fim-hora {
+  margin: 0 0 0 .75rem;
+}
+
+
+.encontro-data, .encontro-data-with-margin  {
+  color: #193CB8;
+  background-color: #DBEAFE;
+  padding: .3rem;
+  border-radius: 10px;
+}
+
+.encontro-hora {
+  font-weight: 600;
+}
 
 /*oficina data modal*/
 .modal-actions {

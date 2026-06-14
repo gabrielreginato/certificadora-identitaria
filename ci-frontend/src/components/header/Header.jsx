@@ -19,6 +19,7 @@ import MenuItem from "@mui/material/MenuItem";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
 import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
+import { CreateEncontroModal } from "./modal/CreateEncontroModal";
 
 async function _login(email, password) {
   return await fetch(`http://localhost:3000/usuarios/login`, {
@@ -44,6 +45,17 @@ async function _post(data, token) {
 async function _update(data, token) {
   return await fetch(`http://localhost:3000/oficinas/${data.id}`, {
     method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+}
+
+async function _postEncontro(data, token) {
+  return await fetch("http://localhost:3000/encontros", {
+    method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
@@ -106,7 +118,12 @@ export function Header({ page }) {
         isOpen={state.isUpdating}
         onClose={() => dispatch({ type: "SET_IS_UPDATING", payload: false })}
         onUpdate={_update}
-        oficina={state.selectedOficina}
+      />
+
+      <CreateEncontroModal
+        isOpen={state.isScheduling}
+        onClose={() => dispatch({ type: "SET_IS_SCHEDULING", payload: false })}
+        onPost={_postEncontro}
       />
 
       <LoginModal

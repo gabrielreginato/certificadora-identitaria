@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Modal } from "./Modal";
 import "../../style.css";
 import { usePageContext } from "../../../contexts/MainContext";
@@ -6,75 +6,51 @@ import { useHeaderSnackbar } from "../HeaderSnackbar";
 
 import placeholderImage from "../../../assets/placeholder.png";
 
-export function UpdateOficinaModal({ isOpen, onClose, onUpdate }) {
+export function CreateEncontroModal({ isOpen, onClose, onPost }) {
   const { dispatch } = usePageContext();
   const { state } = usePageContext();
-  const [tituloValue, setTituloValue] = useState(state.selectedOficina?.titulo || "");
-  const [descricaoValue, setDescricaoValue] = useState(state.selectedOficina?.descricao || "");
-  const [imageUrlValue, setImageUrlValue] = useState(state.selectedOficina?.image_url || "");
-  const [idValue, setIdValue] = useState(state.selectedOficina?.id || "");
-
+  const [dataValue, setDataValue] = useState("");
+  const [horaInicioValue, setHoraInicioValue] = useState("");
+  const [horaFimValue, setHoraFimValue] = useState("");
   const [failMessage, setFailMessage] = useState("");
 
   const { showMessage } = useHeaderSnackbar();
 
-  useEffect(() => {
-    if (isOpen && state.selectedOficina) {
-      setTituloValue(state.selectedOficina.titulo || "");
-      setDescricaoValue(state.selectedOficina.descricao || "");
-      setImageUrlValue(state.selectedOficina.image_url || "");
-      setIdValue(state.selectedOficina.id || "");
-    }
-
-    console.log(state.selectedOficina);
-  }, [isOpen, state.selectedOficina]);
-
   return (
     <Modal className="create-oficina-modal" isOpen={isOpen}>
-        <h2>Atualizar Dados da Oficina</h2>
+      <h2>{state.selectedOficina?.titulo || ""}</h2>
       <div className="modal-fields">
-        <div className="titulo-field">
-          <h3>Título</h3>
+        <div className="data-field">
+          <h3>Data</h3>
           <input
-            type="text"
-            placeholder="Título da Sua Oficina"
-            value={tituloValue}
+            type="date"
+            value={dataValue}
             onChange={(e) => {
-              setTituloValue(e.target.value);
+              setDataValue(e.target.value);
             }}
           />
         </div>
 
-        <div className="descricao-field">
-          <h3>Descrição</h3>
+        <div className="hora-field">
+          <h3>Hora de Início</h3>
           <input
-            type="text"
-            placeholder="Descreva sua oficina..."
-            value={descricaoValue}
+            type="time"
+            value={horaInicioValue}
             onChange={(e) => {
-              setDescricaoValue(e.target.value);
+              setHoraInicioValue(e.target.value);
             }}
           />
         </div>
 
-        <div className="image-field">
-          <h3>URL da Imagem de Exibição</h3>
+        <div className="hora-field">
+          <h3>Hora de Encerramento</h3>
           <input
-            type="text"
-            placeholder="Imagem que será exibida no card da oficina"
-            value={imageUrlValue}
+            type="time"
+            value={horaFimValue}
             onChange={(e) => {
-              setImageUrlValue(e.target.value);
+              setHoraFimValue(e.target.value);
             }}
           />
-        </div>
-
-        <div className="preview-image">
-          {imageUrlValue && imageUrlValue != "" ? (
-            <img src={imageUrlValue} alt="Preview" />
-          ) : (
-            <img src={placeholderImage} />
-          )}
         </div>
       </div>
 
@@ -94,19 +70,20 @@ export function UpdateOficinaModal({ isOpen, onClose, onUpdate }) {
 
         <button
           onClick={() => {
-            onUpdate({
-              id: idValue,
-              titulo: tituloValue,
-              descricao: descricaoValue,
-              image_url: imageUrlValue,
-              tema: "Default",
+            const dataHorarioInicio = `${dataValue}T${horaInicioValue}:00.00Z`;
+            const dataHorarioFim = `${dataValue}T${horaFimValue}:00.00Z`;
+            
+            onPost({
+              oficina_id: `${state.selectedOficina.id}`,
+              data_horario_inicio: dataHorarioInicio,
+              data_horario_fim: dataHorarioFim
             }, state.accountData.token).then((res) => {
               if ([200, 201, 204].includes(res.status)) {
                 dispatch({
                   type: "SET_HEADER_SNACKBAR",
                   payload: {
                     isOpen: true,
-                    message: "Dados atualizados com sucesso!",
+                    message: "Encontro agendado com sucesso!",
                   },
                 });
                 onClose();
@@ -150,19 +127,16 @@ export function UpdateOficinaModal({ isOpen, onClose, onUpdate }) {
                     },
                   });
 
-                  window.location.href = "/";
+                  //window.location.href = "/";
                 }, 2000);
+              } else if (res.status == 400) {
+                res.json().then(r => console.log(r))
               }
-            });
-
-            dispatch({
-              type: "SET_IS_UPDATING",
-              payload: false,
             });
           }}
           className="login-button"
         >
-          Atualizar Dados
+          Agendar Encontro
         </button>
       </div>
     </Modal>

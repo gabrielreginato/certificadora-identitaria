@@ -6,6 +6,8 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import IconButton from "@mui/material/IconButton";
 import Button from "@mui/material/Button";
 import BorderColorIcon from "@mui/icons-material/BorderColor";
+import EditCalendarIcon from "@mui/icons-material/EditCalendar";
+import EventBusyIcon from "@mui/icons-material/EventBusy";
 
 export function OficinaDataModal({ isOpen, onClose, oficina }) {
   // Correção: Destruturando juntos para evitar múltiplas chamadas do contexto
@@ -14,6 +16,7 @@ export function OficinaDataModal({ isOpen, onClose, oficina }) {
 
   const [vinculosTutores, setVinculosTutores] = useState([]);
   const [vinculosParticipantes, setVinculosParticipantes] = useState([]);
+  const [encontros, setEncontros] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const [tutores, setTutores] = useState([]);
@@ -26,18 +29,57 @@ export function OficinaDataModal({ isOpen, onClose, oficina }) {
       setLoading(true);
       try {
         // 1. Busca os vínculos primeiro
-        const [resVinculosTutores, resVinculosParticipantes] =
+        const [resVinculosTutores, resVinculosParticipantes, resEcontros] =
           await Promise.all([
             fetch(
               `http://localhost:3000/oficinas/tutores?oficina_id=${oficina.id}`,
             ).then((r) => r.json()),
             fetch(
-              `http://localhost:3000/oficinas/participantes?oficina_id=${oficina.id}`,
+              `http://localhost:3000/oficinas/participantes?oficfina_id=${oficina.id}`,
             ).then((r) => r.json()),
+            fetch(`http://localhost:3000/encontros?oficina_id=${oficina.id}`)
+              .then((r) => r.json())
+              .then((encontros) => {
+                const encontrosOrdenados = encontros.sort((a, b) => {
+                  return (
+                    new Date(a.data_horario_inicio) -
+                    new Date(b.data_horario_inicio)
+                  );
+                });
+
+                return encontrosOrdenados.map((encontro) => {
+                  const beginTimestamp = encontro.data_horario_inicio;
+                  const endTimestamp = encontro.data_horario_fim;
+
+                  const dataFormatada = new Intl.DateTimeFormat("pt-BR").format(
+                    new Date(beginTimestamp),
+                  );
+
+                  const horaFormatada = new Intl.DateTimeFormat("pt-BR", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  }).format(new Date(beginTimestamp));
+
+                  const horaFimFormatada = new Intl.DateTimeFormat("pt-BR", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  }).format(new Date(endTimestamp));
+
+                  return {
+                    ...encontro,
+                    data: dataFormatada,
+                    hora: horaFormatada,
+                    horaFim: horaFimFormatada,
+                  };
+                });
+              }),
           ]);
 
         const dadosTutores = resVinculosTutores || [];
         const dadosParticipantes = resVinculosParticipantes || [];
+        const dadosEncontros = resEcontros || [];
+
+        setEncontros(dadosEncontros);
 
         // Atualiza os estados de vínculos
         setVinculosTutores(dadosTutores);
@@ -67,6 +109,7 @@ export function OficinaDataModal({ isOpen, onClose, oficina }) {
         ]);
 
         // Trata os dados finais limpando possíveis arrays aninhados
+
         setTutores(resTutores.flat() || []);
         setParticipantes(resParticipantes.flat() || []);
       } catch (error) {
@@ -98,15 +141,15 @@ export function OficinaDataModal({ isOpen, onClose, oficina }) {
                 className="edit-button"
                 onClick={() => {
                   dispatch({
-                    type: "SET_IS_UPDATING",
-                    payload: true,
-                  });
-                  dispatch({
                     type: "SET_SELECTED_OFICINA",
                     payload: oficina,
                   });
 
-                  console.log(state.selectedOficina)
+                  dispatch({
+                    type: "SET_IS_UPDATING",
+                    payload: true,
+                  });
+
                   onClose();
                 }}
               >
@@ -188,6 +231,150 @@ export function OficinaDataModal({ isOpen, onClose, oficina }) {
                   </ul>
                 ) : (
                   <p>Nenhum participante inscrito nesta oficina.</p>
+                )}
+              </div>
+
+              <div className="encontros">
+                <h3>
+                  <div>
+                    {oficina?.professor_responsavel_id == usuarioId ? (
+                      <>
+                        <IconButton
+                          className="add-encontro-button"
+                          onClick={() => {
+                            dispatch({
+                              type: "SET_SELECTED_OFICINA",
+                              payload: oficina,
+                            });
+
+                            dispatch({
+                              type: "SET_IS_SCHEDULING",
+                              payload: true,
+                            });
+                            onClose();
+                          }}
+                        >
+                          <EditCalendarIcon />
+                        </IconButton>
+                        <span className="tipo1">Encontros Agendados</span>
+                      </>
+                    ) : (
+                      <span>Encontros Agendados</span>
+                    )}
+                  </div>
+
+                  {encontros.length > 0 && (
+                    <span className="encontros-num">{encontros.length}</span>
+                  )}
+                </h3>
+
+                {encontros.length > 0 ? (
+                  <ul>
+                    {encontros.map((encontro) => (
+                      <li key={encontro.id}>
+                        {oficina?.professor_responsavel_id == usuarioId && (
+                          <IconButton
+                            className="delete-encontro-button"
+                            sx={{
+                              backgroundColor: "#FFE8E8",
+                              color: "#DB0000",
+                            }}
+                            onClick={() => {
+                              fetch(
+                                `http://localhost:3000/encontros/${encontro.id}`,
+                                {
+                                  method: "DELETE",
+                                  headers: {
+                                    "Content-Type": "application/json",
+                                    Authorization: `Bearer ${state.accountData.token}`,
+                                  },
+                                },
+                              ).then((res) => {
+                                if ([200, 201, 204].includes(res.status)) {
+                                  dispatch({
+                                    type: "SET_HEADER_SNACKBAR",
+                                    payload: {
+                                      isOpen: true,
+                                      message: "Encontro desmarcado com sucesso!",
+                                    },
+                                  });
+                                  onClose();
+                                  setTimeout(
+                                    () => window.location.reload(),
+                                    2000,
+                                  );
+                                } else if (res.status == 401) {
+                                  onClose();
+
+                                  dispatch({
+                                    type: "SET_HEADER_SNACKBAR",
+                                    payload: {
+                                      isOpen: true,
+                                      message:
+                                        "Sessão expirada, faça login e tente novamente!",
+                                    },
+                                  });
+
+                                  setTimeout(() => {
+                                    dispatch({
+                                      type: "SET_HEADER_SNACKBAR",
+                                      payload: { isOpen: false, message: "" },
+                                    });
+
+                                    localStorage.removeItem("token");
+                                    localStorage.removeItem("role");
+                                    localStorage.removeItem("email");
+                                    localStorage.removeItem("name");
+                                    localStorage.removeItem("usuarioId");
+                                    localStorage.removeItem("perfilId");
+                                    localStorage.removeItem("ra");
+
+                                    dispatch({
+                                      type: "SET_ACCOUNT_DATA",
+                                      payload: {
+                                        token: null,
+                                        role: null,
+                                        name: null,
+                                        email: null,
+                                        usuarioId: null,
+                                        perfilId: null,
+                                        ra: null,
+                                      },
+                                    });
+
+                                    window.location.href = "/";
+                                  }, 2000);
+                                }
+                              });
+                            }}
+                          >
+                            <EventBusyIcon />
+                          </IconButton>
+                        )}
+                        <p className="data-hora">
+                          {oficina?.professor_responsavel_id == usuarioId && (
+                            <span className="encontro-data-with-margin">
+                              {encontro?.data}
+                            </span>
+                          )}
+                          {oficina?.professor_responsavel_id != usuarioId && (
+                            <span className="encontro-data-with-margin">
+                              {encontro?.data}
+                            </span>
+                          )}
+                          <span className="encontro-inicio-hora">
+                            {encontro?.hora}
+                          </span>
+                          {" - "}
+                          <span className="encontro-fim-hora">
+                            {encontro?.horaFim}
+                          </span>
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>Nenhum encontro agendado nesta oficina.</p>
                 )}
               </div>
             </div>
