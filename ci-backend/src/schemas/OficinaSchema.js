@@ -21,7 +21,7 @@ const OficinaSchema = z.object({
         .min(3, "A descrição deve ter no mínimo 3 caracteres.")
         .max(255, "A descrição deve ter no máximo 255 carateres.")
         .nonempty("A descrição tema não deve ser nula."),
-    image_url: z.string().optional()
+    image_url: z.string().max(255, "A URL da imagem deve ter no máximo 255 carateres.").optional()
     /*professor_responsavel_id: z.string({
         error: (issue) => issue.input === undefined ? "Forneça um ID válido de professor responsável.": "O ID do professor responsável deve ser uma String."
     })

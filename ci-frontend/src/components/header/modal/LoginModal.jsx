@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Modal } from "./Modal";
 import "../../style.css";
 import { usePageContext } from "../../../contexts/MainContext";
@@ -12,6 +12,12 @@ export function LoginModal({ isOpen, onClose, onLogin }) {
   const [failMessage, setFailMessage] = useState("");
 
   const { showMessage } = useHeaderSnackbar();
+
+  useEffect(() => {
+    if(passValue != "") {
+      setFailMessage("");
+    }
+  }, [passValue]);
 
   return (
     <Modal isOpen={isOpen}>
@@ -55,6 +61,7 @@ export function LoginModal({ isOpen, onClose, onLogin }) {
         </button>
 
         <button
+          disabled={(!emailValue || !passValue) || failMessage != ""}
           onClick={() => {
             onLogin(emailValue, passValue).then((res) => {
               if (res.status == 200) {
@@ -105,6 +112,9 @@ export function LoginModal({ isOpen, onClose, onLogin }) {
                 setEmailValue("");
                 setPassValue("");
                 showMessage("Loged successfuly");
+              } else if (res.status == 401) {
+                setFailMessage("E-mail ou senha incorretos");
+                setPassValue("");
               } else {
                 console.log(res);
                 res.json().then((body) => setFailMessage(body.description));

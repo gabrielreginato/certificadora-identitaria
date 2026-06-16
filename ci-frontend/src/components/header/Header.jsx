@@ -169,7 +169,7 @@ export function Header({ page }) {
                   height: 40,
                 }}
               >
-                {state.accountData.name[0].toUpperCase()}
+                {state.accountData.name[0]?.toUpperCase()}
               </Avatar>
               <Box
                 ml={2}

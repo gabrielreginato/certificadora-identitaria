@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Modal } from "./Modal";
 import "../../style.css";
 import { usePageContext } from "../../../contexts/MainContext";
@@ -12,9 +12,18 @@ export function CreateOficinaModal({ isOpen, onClose, onPost }) {
   const [tituloValue, setTituloValue] = useState("");
   const [descricaoValue, setDescricaoValue] = useState("");
   const [imageUrlValue, setImageUrlValue] = useState("");
-  const [failMessage, setFailMessage] = useState("");
+
+  const [tituloError, setTituloError] = useState("");
+  const [descricaoError, setDescricaoError] = useState("");
+  const [imageUrlError, setImageUrlError] = useState("");
 
   const { showMessage } = useHeaderSnackbar();
+
+  useEffect(() => {
+    if(tituloValue != "") setTituloError("");
+    if(descricaoValue != "") setDescricaoError("");
+    if(imageUrlValue != "") setImageUrlError("");
+  }, [tituloValue, descricaoValue, imageUrlValue]);
 
   return (
     <Modal className="create-oficina-modal" isOpen={isOpen}>
@@ -24,7 +33,10 @@ export function CreateOficinaModal({ isOpen, onClose, onPost }) {
           <h3>Título</h3>
           <input
             type="text"
-            placeholder="Título da Sua Oficina"
+            placeholder={
+              tituloError != "" ? tituloError : "Título da Sua Oficina"
+            }
+            className={`${tituloError != "" ? "error" : "comum"}`}
             value={tituloValue}
             onChange={(e) => {
               setTituloValue(e.target.value);
@@ -36,7 +48,10 @@ export function CreateOficinaModal({ isOpen, onClose, onPost }) {
           <h3>Descrição</h3>
           <input
             type="text"
-            placeholder="Descreva sua oficina..."
+            placeholder={
+              descricaoError != "" ? descricaoError : "Descreva sua oficina..."
+            }
+            className={`${descricaoError != "" ? "error" : "comum"}`}
             value={descricaoValue}
             onChange={(e) => {
               setDescricaoValue(e.target.value);
@@ -48,7 +63,10 @@ export function CreateOficinaModal({ isOpen, onClose, onPost }) {
           <h3>URL da Imagem de Exibição</h3>
           <input
             type="text"
-            placeholder="Imagem que será exibida no card da oficina"
+            placeholder={
+              imageUrlError != "" ? imageUrlError : "Imagem que será exibida no card da oficina"
+            }
+            className={`${imageUrlError != "" ? "error" : "comum"}`}
             value={imageUrlValue}
             onChange={(e) => {
               setImageUrlValue(e.target.value);
@@ -64,15 +82,16 @@ export function CreateOficinaModal({ isOpen, onClose, onPost }) {
           )}
         </div>
       </div>
-
-      {failMessage != "" && <p className="fail-message">{failMessage}</p>}
       <div className="modal-buttons">
         <button
           onClick={() => {
             onClose();
-            setFailMessage("");
-            setEmailValue("");
-            setPassValue("");
+            setTituloValue("");
+            setDescricaoValue("");
+            setImageUrlValue("");
+            setTituloError("");
+            setDescricaoError("");
+            setImageUrlError("");
           }}
           className="cancel-button"
         >
@@ -81,13 +100,16 @@ export function CreateOficinaModal({ isOpen, onClose, onPost }) {
 
         <button
           onClick={() => {
-            console.log(state.accountData.token)
-            onPost({
-              titulo: tituloValue,
-              descricao: descricaoValue,
-              image_url: imageUrlValue,
-              tema: "Default"
-            }, state.accountData.token).then((res) => {
+            console.log(state.accountData.token);
+            onPost(
+              {
+                titulo: tituloValue,
+                descricao: descricaoValue,
+                image_url: imageUrlValue,
+                tema: "Default",
+              },
+              state.accountData.token,
+            ).then((res) => {
               if ([200, 201, 204].includes(res.status)) {
                 dispatch({
                   type: "SET_HEADER_SNACKBAR",
@@ -99,14 +121,21 @@ export function CreateOficinaModal({ isOpen, onClose, onPost }) {
                 onClose();
                 setTimeout(() => window.location.reload(), 2000);
               } else if (res.status == 401) {
-                console.log(res)
+                onClose();
+                setTituloValue("");
+                setDescricaoValue("");
+                setImageUrlValue("");
+                setTituloError("");
+                setDescricaoError("");
+                setImageUrlError("");
+
+                console.log(res);
 
                 dispatch({
                   type: "SET_HEADER_SNACKBAR",
                   payload: {
                     isOpen: true,
-                    message:
-                      "Sessão expirada, faça login e tente novamente!",
+                    message: "Sessão expirada, faça login e tente novamente!",
                   },
                 });
 
@@ -139,6 +168,27 @@ export function CreateOficinaModal({ isOpen, onClose, onPost }) {
 
                   //window.location.href = "/";
                 }, 2000);
+              } else if (res.status == 400) {
+                res.json().then((res) => {
+                  const errors = res.errors;
+
+                  errors.forEach((error) => {
+                    switch (error.field) {
+                      case "titulo":
+                        setTituloError(error.message);
+                        setTituloValue("")
+                        break;
+                      case "descricao":
+                        setDescricaoError(error.message);
+                        setDescricaoValue("");
+                        break;
+                      case "image_url":
+                        setImageUrlError(error.message);
+                        setImageUrlValue("");
+                        break;
+                    }
+                  });
+                });
               }
             });
           }}

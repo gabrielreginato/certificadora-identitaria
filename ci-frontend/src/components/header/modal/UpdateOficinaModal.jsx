@@ -9,12 +9,20 @@ import placeholderImage from "../../../assets/placeholder.png";
 export function UpdateOficinaModal({ isOpen, onClose, onUpdate }) {
   const { dispatch } = usePageContext();
   const { state } = usePageContext();
-  const [tituloValue, setTituloValue] = useState(state.selectedOficina?.titulo || "");
-  const [descricaoValue, setDescricaoValue] = useState(state.selectedOficina?.descricao || "");
-  const [imageUrlValue, setImageUrlValue] = useState(state.selectedOficina?.image_url || "");
+  const [tituloValue, setTituloValue] = useState(
+    state.selectedOficina?.titulo || "",
+  );
+  const [descricaoValue, setDescricaoValue] = useState(
+    state.selectedOficina?.descricao || "",
+  );
+  const [imageUrlValue, setImageUrlValue] = useState(
+    state.selectedOficina?.image_url || "",
+  );
   const [idValue, setIdValue] = useState(state.selectedOficina?.id || "");
 
-  const [failMessage, setFailMessage] = useState("");
+  const [tituloError, setTituloError] = useState("");
+  const [descricaoError, setDescricaoError] = useState("");
+  const [imageUrlError, setImageUrlError] = useState("");
 
   const { showMessage } = useHeaderSnackbar();
 
@@ -29,15 +37,24 @@ export function UpdateOficinaModal({ isOpen, onClose, onUpdate }) {
     console.log(state.selectedOficina);
   }, [isOpen, state.selectedOficina]);
 
+  useEffect(() => {
+    if (tituloValue != "") setTituloError("");
+    if (descricaoValue != "") setDescricaoError("");
+    if (imageUrlValue != "") setImageUrlError("");
+  }, [tituloValue, descricaoValue, imageUrlValue]);
+
   return (
     <Modal className="create-oficina-modal" isOpen={isOpen}>
-        <h2>Atualizar Dados da Oficina</h2>
+      <h2>Atualizar Dados da Oficina</h2>
       <div className="modal-fields">
         <div className="titulo-field">
           <h3>Título</h3>
           <input
+            className={`${tituloError != "" ? "error" : "comum"}`}
             type="text"
-            placeholder="Título da Sua Oficina"
+            placeholder={
+              tituloError != "" ? tituloError : "Título da Sua Oficina"
+            }
             value={tituloValue}
             onChange={(e) => {
               setTituloValue(e.target.value);
@@ -48,8 +65,11 @@ export function UpdateOficinaModal({ isOpen, onClose, onUpdate }) {
         <div className="descricao-field">
           <h3>Descrição</h3>
           <input
+            className={`${descricaoError != "" ? "error" : "comum"}`}
             type="text"
-            placeholder="Descreva sua oficina..."
+            placeholder={
+              descricaoError != "" ? descricaoError : "Descreva sua oficina..."
+            }
             value={descricaoValue}
             onChange={(e) => {
               setDescricaoValue(e.target.value);
@@ -60,8 +80,13 @@ export function UpdateOficinaModal({ isOpen, onClose, onUpdate }) {
         <div className="image-field">
           <h3>URL da Imagem de Exibição</h3>
           <input
+            className={`${imageUrlError != "" ? "error" : "comum"}`}
             type="text"
-            placeholder="Imagem que será exibida no card da oficina"
+            placeholder={
+              imageUrlError != ""
+                ? imageUrlError
+                : "Imagem que será exibida no card da oficina"
+            }
             value={imageUrlValue}
             onChange={(e) => {
               setImageUrlValue(e.target.value);
@@ -77,15 +102,16 @@ export function UpdateOficinaModal({ isOpen, onClose, onUpdate }) {
           )}
         </div>
       </div>
-
-      {failMessage != "" && <p className="fail-message">{failMessage}</p>}
       <div className="modal-buttons">
         <button
           onClick={() => {
             onClose();
-            setFailMessage("");
-            setEmailValue("");
-            setPassValue("");
+            setTituloValue("");
+            setDescricaoValue("");
+            setImageUrlValue("");
+            setTituloError("");
+            setDescricaoError("");
+            setImageUrlError("");
           }}
           className="cancel-button"
         >
@@ -94,13 +120,16 @@ export function UpdateOficinaModal({ isOpen, onClose, onUpdate }) {
 
         <button
           onClick={() => {
-            onUpdate({
-              id: idValue,
-              titulo: tituloValue,
-              descricao: descricaoValue,
-              image_url: imageUrlValue,
-              tema: "Default",
-            }, state.accountData.token).then((res) => {
+            onUpdate(
+              {
+                id: idValue,
+                titulo: tituloValue,
+                descricao: descricaoValue,
+                image_url: imageUrlValue,
+                tema: "Default",
+              },
+              state.accountData.token,
+            ).then((res) => {
               if ([200, 201, 204].includes(res.status)) {
                 dispatch({
                   type: "SET_HEADER_SNACKBAR",
@@ -109,17 +138,30 @@ export function UpdateOficinaModal({ isOpen, onClose, onUpdate }) {
                     message: "Dados atualizados com sucesso!",
                   },
                 });
+
+                dispatch({
+                  type: "SET_IS_UPDATING",
+                  payload: false,
+                });
+
                 onClose();
                 setTimeout(() => window.location.reload(), 2000);
               } else if (res.status == 401) {
-                console.log(res)
+                onClose();
+                setTituloValue("");
+                setDescricaoValue("");
+                setImageUrlValue("");
+                setTituloError("");
+                setDescricaoError("");
+                setImageUrlError("");
+
+                console.log(res);
 
                 dispatch({
                   type: "SET_HEADER_SNACKBAR",
                   payload: {
                     isOpen: true,
-                    message:
-                      "Sessão expirada, faça login e tente novamente!",
+                    message: "Sessão expirada, faça login e tente novamente!",
                   },
                 });
 
@@ -150,14 +192,35 @@ export function UpdateOficinaModal({ isOpen, onClose, onUpdate }) {
                     },
                   });
 
+                  dispatch({
+                    type: "SET_IS_UPDATING",
+                    payload: false,
+                  });
+
                   window.location.href = "/";
                 }, 2000);
-              }
-            });
+              } else if (res.status == 400) {
+                res.json().then((res) => {
+                  const errors = res.errors;
 
-            dispatch({
-              type: "SET_IS_UPDATING",
-              payload: false,
+                  errors.forEach((error) => {
+                    switch (error.field) {
+                      case "titulo":
+                        setTituloError(error.message);
+                        setTituloValue("");
+                        break;
+                      case "descricao":
+                        setDescricaoError(error.message);
+                        setDescricaoValue("");
+                        break;
+                      case "image_url":
+                        setImageUrlError(error.message);
+                        setImageUrlValue("");
+                        break;
+                    }
+                  });
+                });
+              }
             });
           }}
           className="login-button"
