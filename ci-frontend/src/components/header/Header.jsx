@@ -18,7 +18,7 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
-import LocalLibraryIcon from '@mui/icons-material/LocalLibrary';
+import LocalLibraryIcon from "@mui/icons-material/LocalLibrary";
 import { CreateEncontroModal } from "./modal/CreateEncontroModal";
 
 async function _login(email, password) {
@@ -106,6 +106,110 @@ export function Header({ page }) {
     window.location.reload();
   };
 
+  function PerfilMenu() {
+  return state.accountData.token === null ? (
+    <Button
+      variant="outlined"
+      className="login-button"
+      onClick={() => setShowLoginModal(true)}
+    >
+      Entrar
+    </Button>
+  ) : (
+    <>
+      <ListItemButtom
+        className="perfil-button"
+        onClick={handleClick}
+        sx={{
+          borderRadius: "10px",
+          bgcolor: "#F1F7FF",
+          "&:hover": {
+            bgcolor: "#d8e1ec",
+          },
+        }}
+      >
+        <Avatar
+          className="avatar"
+          sx={{
+            bgcolor: "#155DFC",
+            width: 40,
+            height: 40,
+          }}
+        >
+          {state.accountData.name[0]?.toUpperCase()}
+        </Avatar>
+        <Box
+          ml={2}
+          sx={{
+            paddingX: 1.5,
+          }}
+        >
+          <Typography
+            variant="subtitle1"
+            sx={{
+              fontWeight: "500",
+              color: "#212121",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {state.accountData.name}
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              color: "#212121",
+            }}
+          >
+            {state.accountData.role == "professor" ? "Professor" : "Aluno"}
+          </Typography>
+        </Box>
+      </ListItemButtom>
+      <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+        {page != "perfil" && (
+          <MenuItem
+            onClick={() => {
+              handleClose();
+              window.location.href = "/perfil";
+            }}
+            sx={{ mb: 3, mt: 1 }}
+          >
+            <PersonIcon sx={{ paddingRight: "1rem" }} />
+            Meu perfil
+          </MenuItem>
+        )}
+        {state.accountData.token != null &&
+          state.accountData.role == "professor" && (
+            <MenuItem
+              onClick={() => {
+                setShowCreateOficinaModal(true);
+                handleClose();
+                //window.location.href = "/perfil";
+              }}
+              sx={{ mb: 3, mt: 1 }}
+            >
+              <LocalLibraryIcon
+                sx={{ paddingRight: "1rem", color: "#0000D0" }}
+              />
+              Criar Oficina
+            </MenuItem>
+          )}
+        <MenuItem
+          onClick={() => {
+            handleClose();
+            logOut();
+            window.location.href = "/";
+          }}
+        >
+          <LogoutIcon sx={{ paddingRight: "1rem", color: "red" }} />
+          Sair
+        </MenuItem>
+      </Menu>
+    </>
+  );
+}
+
   return (
     <div className="header">
       <CreateOficinaModal
@@ -140,8 +244,11 @@ export function Header({ page }) {
 
       <div className="right-side">
         {page === "main" && <SearchBar />}
+        <PerfilMenu 
+          className="desktop-perfil-button"
+        />
 
-        {(state.accountData.token === null) ? (
+        {/*{state.accountData.token === null ? (
           <Button
             variant="outlined"
             className="login-button"
@@ -152,6 +259,7 @@ export function Header({ page }) {
         ) : (
           <>
             <ListItemButtom
+              className="perfil-button"
               onClick={handleClick}
               sx={{
                 borderRadius: "10px",
@@ -214,19 +322,22 @@ export function Header({ page }) {
                   Meu perfil
                 </MenuItem>
               )}
-              {(state.accountData.token != null && state.accountData.role == "professor") && (
-                <MenuItem
-                  onClick={() => {
-                    setShowCreateOficinaModal(true);
-                    handleClose();
-                    //window.location.href = "/perfil";
-                  }}
-                  sx={{ mb: 3, mt: 1 }}
-                >
-                  <LocalLibraryIcon sx={{ paddingRight: "1rem", color: "#0000D0" }} />
-                  Criar Oficina
-                </MenuItem>
-              )}
+              {state.accountData.token != null &&
+                state.accountData.role == "professor" && (
+                  <MenuItem
+                    onClick={() => {
+                      setShowCreateOficinaModal(true);
+                      handleClose();
+                      //window.location.href = "/perfil";
+                    }}
+                    sx={{ mb: 3, mt: 1 }}
+                  >
+                    <LocalLibraryIcon
+                      sx={{ paddingRight: "1rem", color: "#0000D0" }}
+                    />
+                    Criar Oficina
+                  </MenuItem>
+                )}
               <MenuItem
                 onClick={() => {
                   handleClose();
@@ -239,7 +350,7 @@ export function Header({ page }) {
               </MenuItem>
             </Menu>
           </>
-        )}
+        )}*/}
       </div>
 
       <HeaderSnackbar />

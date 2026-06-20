@@ -1,24 +1,31 @@
-const { Aluno, Oficina, AlunoParticipaOficina } = require('../../../models/index');
+const {
+  Aluno,
+  Oficina,
+  AlunoParticipaOficina,
+} = require("../../../models/index");
 
 class VinculoAlunoOficinaRepository {
-    async create(data) {
-        const aluno = await Aluno.findByPk(data.aluno_id);
-        const oficina = await Oficina.findByPk(data.oficina_id);
-        
-        //return await AlunoParticipaOficina.create(data);
-        return oficina.addAluno(aluno);
-    }
+  async create(data) {
+    const aluno = await Aluno.findByPk(data.aluno_id);
+    const oficina = await Oficina.findByPk(data.oficina_id);
 
-    async find(where, options = {}) {
-        return await AlunoParticipaOficina.findAll({
-            where,
-            ...options
-        });
-    }
+    //return await AlunoParticipaOficina.create(data);
+    return oficina.addAluno(aluno);
+  }
 
-    async deleteById(id) {
-        return await AlunoParticipaOficina.destroy({ where: { id: id }});
-    }
+  async find(where, options = {}) {
+    return await AlunoParticipaOficina.findAll({
+      where,
+      ...options,
+    });
+  }
+
+  async deleteById(id, options = {}) {
+    return await AlunoParticipaOficina.destroy({
+      where: { id: id },
+      ...options,
+    });
+  }
 }
 
 module.exports = { VinculoAlunoOficinaRepository };

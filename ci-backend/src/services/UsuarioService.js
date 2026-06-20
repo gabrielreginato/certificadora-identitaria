@@ -45,13 +45,6 @@ class UsuarioService {
                 tipo: data.role
             };
 
-            bcrypt.hash(data.senha, 10).then(hash => {
-                console.log(hash);
-            });
-
-
-            const senhaHash = bcrypt.hash(data.senha, 10).then(h => console.log(h)).catch(e => console.error(e));
-
             const novoUsuario = await this.usuarioRepository.create(authData, { transaction: t });
 
             if(data.role === 'aluno') {
@@ -68,8 +61,6 @@ class UsuarioService {
             }
 
             await t.commit();
-
-            console.log(data);
 
             const resultado = novoUsuario.toJSON();
             delete resultado.senha_hash;
@@ -97,10 +88,6 @@ class UsuarioService {
 
     async login(data) {
         const usuario = await this.usuarioRepository.findByEmailWithProfile(data.email);
-
-        bcrypt.hash(data.senha, 10).then(hash => {
-            console.log(hash);
-        });
 
         if(!usuario) throw new BusinessError("E-mail ou senha incorretos.", 401);
 
@@ -157,9 +144,7 @@ class UsuarioService {
             }
 
             await t.commit();
-
-            console.log(data);
-
+            
             const usuarioAtualizado = await this.usuarioRepository.findByIdWithProfile(id);
             const resultado = usuarioAtualizado.toJSON();
             delete resultado.senha_hash;

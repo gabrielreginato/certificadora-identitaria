@@ -16,7 +16,6 @@ route.get('/', async (req, res, next) => {
         const filtros = SearchEncontroSchema.parse(req.query);
 
         const result = await service.find(filtros);
-        console.log(result);
 
         return res.status(200).json(result);
     } catch (error) {
@@ -34,8 +33,6 @@ route.post('/', authMiddleware, async (req, res, next) => {
         }
 
         const result = await service.create(dadosValidados);
-
-        console.log(result);
 
         return res.status(201).json({
             message: "Encontro criado com sucesso.",
@@ -78,7 +75,6 @@ route.delete('/:id', authMiddleware, async (req, res, next) => {
         }
 
         const result = await service.deleteById(userId, encontroId);
-        console.log(result);
 
         return res.status(204).json({});
     } catch (error) {

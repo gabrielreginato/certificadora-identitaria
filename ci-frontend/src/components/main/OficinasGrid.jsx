@@ -22,7 +22,7 @@ export function OficinasGrid({ oficinas, page = "main" }) {
       />
 
       {oficinas.length === 0 && (
-        <Typography variant="h5" textAlign="center" mt={4}>
+        <Typography variant="h5" textAlign="center" color="black" mt={4}>
           Fim da visualização...
         </Typography>
       )}
