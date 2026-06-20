@@ -17,6 +17,7 @@ const initialState = {
     perfilId: localStorage.getItem("perfilId") || null,
     ra: localStorage.getItem("ra") || null,
   },
+  notificacoes: [],
   oficinasVinculadas: [],
   isUpdating: false,
   isScheduling: false,
@@ -43,6 +44,8 @@ function reducer(state, action) {
       return { ...state, selectedOficina: action.payload };
     case "SET_IS_SCHEDULING":
       return { ...state, isScheduling: action.payload };
+    case "SET_NOTIFICACOES":
+      return { ...state, notificacoes: action.payload };
     default:
       return state;
   }

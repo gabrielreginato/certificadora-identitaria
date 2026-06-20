@@ -1,4 +1,4 @@
-const { OficinaService } = require('../services/OficinaService');
+const { OficinaService, NotificacaoService } = require('../services/index');
 const { 
     OficinaSchema, 
     UpdateOficinaSchema, 
@@ -17,6 +17,7 @@ const { authMiddleware } = require('../middlewares/Auth');
 const route = express.Router();
 
 const service = new OficinaService();
+const notificacaoService = new NotificacaoService();
 
 route.get('/', async (req, res, next) => {
     try {
@@ -183,6 +184,34 @@ route.get('/participantes', async (req, res, next) => {
         const result = await service.findParticipantes(filtros);
 
         return res.status(200).json(result);
+    } catch(error) {
+        next(error);
+    }
+});
+
+route.get('/notificacoes', authMiddleware, async (req, res, next) => {
+    try {
+        const user = req.user;
+
+        const nots = await notificacaoService.find({ usuario_id: user.id })
+
+        return res.status(200).json(nots);
+    } catch(error) {
+        next(error);
+    }
+});
+
+route.post('/notificacoes/check', authMiddleware, async (req, res, next) => {
+    try {
+        const notificacoes = req.body.notificacoes;
+        const user = req.user;
+
+        for(const notId of notificacoes) {
+            await notificacaoService.updateById(notId, { visto: true })
+        }
+        
+
+        return res.status(200).json({});
     } catch(error) {
         next(error);
     }

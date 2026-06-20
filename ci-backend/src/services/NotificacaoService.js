@@ -43,6 +43,7 @@ class NotificacaoService {
             return await this.repository.updateById(id, data);
         } catch(error) {
             throw error;
+            return {};
         }
     }
 

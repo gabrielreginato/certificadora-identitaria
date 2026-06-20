@@ -3,6 +3,7 @@ const { AlunoService } = require('./AlunoService');
 const { ProfessorService } = require('./ProfessorService');
 const { OficinaService } = require('./OficinaService');
 const { EncontroService } = require('./EncontroService');
+const { NotificacaoService } = require('./NotificacaoService');
 
 module.exports = {
     UsuarioService,
@@ -10,4 +11,5 @@ module.exports = {
     ProfessorService,
     OficinaService,
     EncontroService,
+    NotificacaoService
 };
