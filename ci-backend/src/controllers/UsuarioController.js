@@ -18,7 +18,6 @@ route.get('/', async (req, res, next) => {
         const filtros = SearchUsuarioSchema.parse(req.query);
 
         const result = await service.find(filtros);
-        console.log(result);
 
         return res.status(200).json(result);
     } catch (error) {
@@ -31,8 +30,6 @@ route.post('/alunos/signin', async (req, res, next) => {
         const dadosValidados = AlunoSchema.parse(req.body);
         dadosValidados.role = 'aluno';
         const result = await service.create(dadosValidados);
-
-        console.log(result);
 
         return res.status(201).json({
             message: "Aluno cadastrado com sucesso.",
@@ -48,8 +45,6 @@ route.post('/professores/signin', async (req, res, next) => {
         const dadosValidados = ProfessorSchema.parse(req.body);
         dadosValidados.role = 'professor';
         const result = await service.create(dadosValidados);
-
-        console.log(result);
 
         return res.status(201).json({
             message: "Professor cadastrado com sucesso.",
@@ -82,8 +77,6 @@ route.put('/alunos', authMiddleware, async (req, res, next) => {
 
         const result = await service.updateById(req.user.id, dadosValidados);
 
-        console.log(result);
-
         return res.status(201).json({
             message: "Aluno atualizado com sucesso.",
             data: result
@@ -100,8 +93,6 @@ route.put('/professores', authMiddleware, async (req, res, next) => {
 
         const result = await service.updateById(req.user.id, dadosValidados);
 
-        console.log(result);
-
         return res.status(201).json({
             message: "Professor atualizado com sucesso.",
             data: result
@@ -115,8 +106,7 @@ route.put('/professores', authMiddleware, async (req, res, next) => {
 route.delete('/', authMiddleware, async (req, res, next) => {
     try {
         const result = await service.deleteById(req.user.id);
-        console.log(result);
-
+        
         return res.status(204).json({});
     } catch (error) {
         next(error);

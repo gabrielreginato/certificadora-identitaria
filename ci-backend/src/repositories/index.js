@@ -5,6 +5,7 @@ const { OficinaRepository } = require('./OficinaRepository');
 const { EncontroRepository } = require('./EncontroRepository');
 const { VinculoAlunoOficinaRepository } = require('./links/VinculoAlunoOficinaRepository');
 const { VinculoProfessorOficinaRepository } = require('./links/VinculoProfessorOficinaRepository');
+const { NotificacaoRepository } = require('./NotificacaoRepository');
 
 
 module.exports = {
@@ -14,5 +15,6 @@ module.exports = {
     OficinaRepository,
     EncontroRepository,
     VinculoAlunoOficinaRepository,
-    VinculoProfessorOficinaRepository
+    VinculoProfessorOficinaRepository,
+    NotificacaoRepository
 };

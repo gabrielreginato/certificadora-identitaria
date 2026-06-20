@@ -26,7 +26,6 @@ route.get('/', async (req, res, next) => {
         }
 
         const result = await service.find(filtros);
-        console.log(result);
 
         return res.status(200).json(result);
     } catch (error) {
@@ -49,9 +48,6 @@ route.post('/', authMiddleware, async (req, res, next) => {
         dadosValidados.professor_responsavel_id = req.user.id;
 
         const result = await service.create(dadosValidados);
-
-        console.log(result);
-
         return res.status(201).json({
             message: "Oficina criada com sucesso.",
             data: result
@@ -73,8 +69,6 @@ route.put('/:id', authMiddleware, async (req, res, next) => {
 
         const result = await service.updateById(oficinaId, dadosValidados);
 
-        console.log(result);
-
         return res.status(201).json({
             message: "Oficina atualizada com sucesso."
         });
@@ -93,7 +87,6 @@ route.delete('/:id', authMiddleware, async (req, res, next) => {
         }
 
         const result = await service.deleteById(userId, oficinaId);
-        console.log(result);
 
         return res.status(204).json({});
     } catch (error) {
@@ -112,8 +105,6 @@ route.post('/inscricao/professores', authMiddleware, async (req, res, next) => {
 
         const result = await service.toLinkProfessores(dadosValidados);
 
-        console.log(result);
-
         return res.status(201).json({
             message: "Professor inscrito com sucesso.",
             data: result
@@ -129,8 +120,6 @@ route.delete('/inscricao/professores', authMiddleware, async (req, res, next) =>
         dadosValidados.user = req.user;
 
         const result = await service.toUnlinkProfessores(dadosValidados);
-
-        console.log(result);
 
         return res.status(201).json({
             message: "Professor desinscrito com sucesso.",
@@ -151,8 +140,6 @@ route.post('/inscricao/alunos', authMiddleware, async (req, res, next) => {
 
         const result = await service.toLinkAlunos(dadosValidados);
 
-        console.log(result);
-
         return res.status(200).json({
             message: "Aluno inscrito com sucesso.",
             data: result
@@ -169,8 +156,6 @@ route.delete('/inscricao/alunos', authMiddleware, async (req, res, next) => {
 
         const result = await service.toUnlinkAlunos(dadosValidados);
 
-        console.log(result);
-
         return res.status(200).json({
             message: "Aluno desinscrito com sucesso.",
         });
@@ -184,7 +169,6 @@ route.get('/tutores', async (req, res, next) => {
         const filtros = SearchVinculosSchema.parse(req.query);
 
         const result = await service.findTutores(filtros);
-        console.log(result);
 
         return res.status(200).json(result);
     } catch(error) {
@@ -197,7 +181,6 @@ route.get('/participantes', async (req, res, next) => {
         const filtros = SearchVinculosSchema.parse(req.query);
 
         const result = await service.findParticipantes(filtros);
-        console.log(result);
 
         return res.status(200).json(result);
     } catch(error) {

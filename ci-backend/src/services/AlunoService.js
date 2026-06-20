@@ -21,7 +21,6 @@ class AlunoService {
 
     async create(data) {
         try {
-            console.log(data)
             if(await verifyEmailDuplicate(data.email)) throw new BusinessError("Este e-mail já está em uso.", 409);
 
             return await this.repository.create(data);

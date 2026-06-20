@@ -9,6 +9,8 @@ const {
 const sequelize = require('sequelize');
 const { BusinessError } = require('../errors/BusinessError');
 const { Professor, Aluno, Usuario } = require('../../models/index');
+const { sequelize: dbConnection } = require('../../config/MysqlConnection');
+const { NotificacaoService } = require('./NotificacaoService');
 
 class OficinaService {
     constructor() {
@@ -18,6 +20,7 @@ class OficinaService {
         this.usuarioRepository = new UsuarioRepository();
         this.professorRepository = new ProfessorRepository();
         this.alunoRepository = new AlunoRepository();
+        this.notificacaoService = new NotificacaoService();
     }
     
     async find(filtros) {
@@ -63,10 +66,25 @@ class OficinaService {
 
             if(!oficina || oficina.length === 0) throw new BusinessError("ID não encontrado", 404);
 
-            if(oficina[0].professor_responsavel_id != data.userId) throw new BusinessError("Professores podem alterar apenas as próprias oficinas.", 403);
+            const oficinaOriginal = oficina[0];
+
+            if(oficinaOriginal.professor_responsavel_id != data.userId) throw new BusinessError("Professores podem alterar apenas as próprias oficinas.", 403);
             
             delete data.userId;
-            return await this.oficinaRepository.updateById(id, data);
+            const resultUpdate = await this.oficinaRepository.updateById(id, data);
+
+            if(resultUpdate) {
+                this.notificarAssociados({ 
+                    id: id, 
+                    tituloOriginal: oficinaOriginal.titulo,
+                    tituloNotificacao: "Oficina Atualizada",
+                    mensagem: `A oficina "${oficinaOriginal.titulo}" teve seus detalhes alterados pelo professor. Confira as novidades!`,
+                }).catch(err => {
+                    console.error("Erro geral no processo de notificações de alteração:", err);
+                });
+            }
+
+            return resultUpdate;
         } catch(error) {
             if(error instanceof sequelize.ForeignKeyConstraintError) {
                 const messages = {
@@ -77,6 +95,44 @@ class OficinaService {
             }
 
             throw error;
+        }
+    }
+
+    async notificarAssociados({oficinaId, tituloAntigo, tituloNotificacao, mensagem}) {
+        try {
+            const [tutores, participantes] = await Promise.all([
+                this.findTutores({ oficina_id: oficinaId }),
+                this.findParticipantes({ oficina_id: oficinaId })
+            ]);
+
+            const usuarioIds = new Set();
+
+            tutores.forEach(t => {
+                if(t.professor?.usuario?.id) {
+                    usuarioIds.add(t.professor.usuario.id);
+                }
+            });
+
+            participantes.forEach(t => {
+                if(t.aluno?.usuario?.id) {
+                    usuarioIds.add(t.aluno.usuario.id);
+                }
+            });
+
+            for(const usuarioId of usuarioIds) {
+                try {
+                    await this.notificacaoService.create({
+                        usuario_id: usuarioId,
+                        titulo: tituloNotificacao,
+                        mensagem: mensagem,
+                        visto: false
+                    });
+                } catch (erroNotificacao) {
+                    console.error(`Falha ao enviar notificação de alteração para o usuario_id ${usuarioId}:`, erroNotificacao.message);
+                }
+            }
+        } catch (error) {
+            console.error("Falha ao buscar usuários para envio de notificações:", error);
         }
     }
 
@@ -105,6 +161,8 @@ class OficinaService {
     }
 
     async toLinkProfessores(data) {
+        const t = await dbConnection.transaction();
+
         try {
             const oficina = await this.oficinaRepository.find({ id: data.oficina_id });
             if(!oficina || oficina.length === 0) throw new BusinessError('ID de oficina não encontrado', 409);
@@ -124,11 +182,26 @@ class OficinaService {
                 throw new BusinessError("Este professor já é tutor desta oficina.", 409);
             } 
 
-            return await this.vinculoProfessorOficinaRepository.create({ 
+            const novoVinculo = await this.vinculoProfessorOficinaRepository.create({ 
                 professor_id: professor[0].id, 
                 oficina_id: oficina[0].id 
-            });
+            }, { transaction: t });
+
+            const usuarioId = professor[0].usuario_id;
+
+            await this.notificacaoService.create({
+                usuario_id: usuarioId,
+                titulo: "Inscrição Confirmada!",
+                mensagem: `Você foi inscrito com sucesso em "${oficina[0].titulo}."`,
+                visto: false
+            }, { transaction: t })
+
+            await t.commit();
+
+            return novoVinculo;
         } catch(error){
+            await t.rollback();
+
             if(error instanceof sequelize.ForeignKeyConstraintError) {
                 const messages = {
                     //professor_id: "ID de professor não encontrado.",
@@ -143,6 +216,8 @@ class OficinaService {
     }
 
     async toUnlinkProfessores(data) {
+        const t = await dbConnection.transaction();
+
         try {
             const oficina = await this.oficinaRepository.find({ id: data.oficina_id });
             if(!oficina || oficina.length === 0) throw new BusinessError('ID de oficina não encontrado', 409);
@@ -156,8 +231,23 @@ class OficinaService {
             });
             if(!vinculo || vinculo.length == 0) throw new BusinessError('Vínculo não encontrado, portanto não foi possível apagá-lo.', 409);
 
-            return await this.vinculoProfessorOficinaRepository.deleteById(vinculo[0].id);
+            const deletado = await this.vinculoProfessorOficinaRepository.deleteById(vinculo[0].id, { transaction: t });
+
+            const usuarioId = professor[0].usuario_id;
+
+            await this.notificacaoService.create({
+                usuario_id: usuarioId,
+                titulo: "Cancelamento de Inscrição",
+                mensagem: `Sua inscrição "${oficina[0].titulo}" foi cancelada.`,
+                visto: false
+            }, { transaction: t });
+
+            await t.commit();
+
+            return deletado;
         } catch(error){
+            await t.rollback();
+
             if(error instanceof sequelize.ForeignKeyConstraintError) {
                 const messages = {
                     //professor_id: "ID de professor não encontrado.",
@@ -172,6 +262,8 @@ class OficinaService {
     }
 
     async toLinkAlunos(data) {
+        const t = await dbConnection.transaction();
+
         try {
             const oficina = await this.oficinaRepository.find({ id: data.oficina_id });
             if(!oficina || oficina.length === 0) throw new BusinessError('ID de oficina não encontrado', 409);
@@ -187,12 +279,26 @@ class OficinaService {
                 throw new BusinessError("Este aluno já é participante desta oficina.", 409);
             } 
 
-
-            return await this.vinculoAlunoOficinaRepository.create({ 
+            const novoVinculo = await this.vinculoAlunoOficinaRepository.create({ 
                 aluno_id: aluno[0].id, 
                 oficina_id: oficina[0].id
-            });
+            }, { transaction: t });
+
+            const usuarioId = aluno[0].usuario_id;
+
+            await this.notificacaoService.create({
+                usuario_id: usuarioId,
+                titulo: "Inscrição Confirmada!",
+                mensagem: `Você foi inscrito com sucesso em "${oficina[0].titulo}."`,
+                visto: false
+            }, { transaction: t })
+
+            await t.commit();  
+
+            return novoVinculo;
         } catch(error){
+            await t.rollback();
+
             if(error instanceof sequelize.ForeignKeyConstraintError) {
                 const messages = {
                     //oficina_id: "ID de oficina não encontrado."
@@ -206,6 +312,8 @@ class OficinaService {
     }
 
     async toUnlinkAlunos(data) {
+        const t = await dbConnection.transaction();
+
         try {
             const oficina = await this.oficinaRepository.find({ id: data.oficina_id });
             if(!oficina || oficina.length === 0) throw new BusinessError('ID de oficina não encontrado', 409);
@@ -220,8 +328,23 @@ class OficinaService {
 
             if(!vinculo || vinculo.length == 0) throw new BusinessError('Vínculo não encontrado, portanto não foi possível apagá-lo.', 409);
 
-            return await this.vinculoAlunoOficinaRepository.deleteById(vinculo[0].id);
+            const deletado = await this.vinculoAlunoOficinaRepository.deleteById(vinculo[0].id, { transaction: t });
+
+            const usuarioId = aluno[0].usuario_id;
+
+            await this.notificacaoService.create({
+                usuario_id: usuarioId,
+                titulo: "Cancelamento de Inscrição",
+                mensagem: `Sua inscrição "${oficina[0].titulo}" foi cancelada.`,
+                visto: false
+            }, { transaction: t });
+
+            await t.commit();
+
+            return deletado;
         } catch(error){
+            await t.rollback();
+
             if(error instanceof sequelize.ForeignKeyConstraintError) {
                 const messages = {
                     //oficina_id: "ID de oficina não encontrado."

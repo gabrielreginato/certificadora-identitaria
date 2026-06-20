@@ -1,13 +1,15 @@
-const { EncontroRepository, UsuarioRepository, OficinaRepository } = require('../repositories/index');
+const { EncontroRepository, UsuarioRepository/*, OficinaRepository*/ } = require('../repositories/index');
 const sequelize = require('sequelize');
 const { BusinessError } = require('../errors/BusinessError');
 const { Oficina } = require('../../models/index');
+const { OficinaService } = require('./OficinaService');
 
 class EncontroService {
     constructor() {
         this.encontroRepository = new EncontroRepository();
         this.usuarioRepository = new UsuarioRepository();
-        this.oficinaRepository = new OficinaRepository();
+        //this.oficinaRepository = new OficinaRepository();
+        this.oficinaService = new OficinaService();
     }
 
     async find(filtros) {
@@ -33,7 +35,7 @@ class EncontroService {
 
     async create(data) {
         try {
-            const oficina = await this.oficinaRepository.find({ id: data.oficina_id });
+            const oficina = await this.oficinaService.find({ id: data.oficina_id });
             if(!oficina || oficina.length == 0) throw new BusinessError('Oficina não encontrada.', 409);
 
             if(oficina[0].professor_responsavel_id != data.user.id) throw new BusinessError('Professores podem adicionar encontros apenas às próprias oficinas.');
@@ -53,7 +55,20 @@ class EncontroService {
             ) 
                 throw new BusinessError("Ambas as datas deve ser posteriores à data atual.", 409);
 
-            return await this.encontroRepository.create(data);
+            const encontro = await this.encontroRepository.create(data);
+
+            if(encontro) {
+                this.oficinaService.notificarAssociados({ 
+                    id: oficina[0].id, 
+                    tituloOriginal: oficina[0].titulo,
+                    tituloNotificacao: "Encontro Agendado",
+                    mensagem: `Um novo encontro de "${oficina[0].titulo}" foi agendado para ${new Intl.DateTimeFormat('pt-BR').format(dataInico)}.`,
+                }).catch(err => {
+                    console.error("Erro geral no processo de notificações de alteração:", err);
+                });
+            }
+
+            return encontro;
         } catch(error) {
             /*if(error instanceof sequelize.ForeignKeyConstraintError) {
                 const messages = {
@@ -67,68 +82,12 @@ class EncontroService {
         }
     }
 
-    /*async updateById(id, data) {
-        try {
-            const encontro = await this.encontroRepository.find({ id: id });
-            if(!encontro || encontro.length == 0) throw new BusinessError('Encontro não encontrado.', 409);
-
-            const oficina = await this.oficinaRepository.find({ id: encontro[0].oficina_id });
-            //Improvável
-            //if(!oficina || oficina.length == 0) throw new BusinessError('Oficina não encontrada.', 409);
-
-            if(oficina[0].professor_responsavel_id != data.user.id) throw new BusinessError('Professores podem alterar apenas encontros das próprias oficinas.');
-
-            delete data.user;
-
-            //const dataAtual = (data.data_horario_inicio || data.data_horario_fim) ? new Date() : null;
-            const dataInicio = data.data_horario_inicio ? new Date(data.data_horario_inicio) : null;
-            const dataFim = data.data_horario_fim ? new Date(data.data_horario_fim) : null;
-
-            //Comparação de novas datas de início o fim
-            if(dataInicio && dataFim) {
-                if(dataFim.getTime() <= dataInicio.getTime()) {
-                    throw new BusinessError("A data de término deve ser posterior à data de início.", 409);
-                }
-                    
-                if(
-                    dataFim.getTime() < Date.now() ||
-                    dataInicio.getTime() < Date.now()
-                ) 
-                    throw new BusinessError("Ambas as datas deve ser posteriores à data atual.", 409);
-            }
-            
-            //Comparação de nova data de início e atual data de fim
-            if(dataInicio) {
-                const encontro = await this.find({ id: id });
-                const encontroDataFim = new Date(encontro[0].data_horario_fim).getTime();
-
-                if(encontroDataFim < dataInicio.getTime()) {
-                    throw new BusinessError("A data de término deve ser posterior à data de início.", 409);
-                }
-            }
-
-            //Comparação de nova data de fim e atual data de início
-            if(dataFim) {
-                const encontro = await this.find({ id: id });
-                const encontroDataInicio = new Date(encontro[0].data_horario_inicio).getTime();
-
-                if(dataFim.getTime() < encontroDataInicio) {
-                    throw new BusinessError("A data de término deve ser posterior à data de início.", 409);
-                }
-            }
-
-            return await this.encontroRepository.updateById(id, data);
-        } catch(error) {
-            throw error;
-        }
-    }*/
-
     async updateById(id, data) {
         try {
             const encontro = await this.encontroRepository.find({ id: id });
             if(!encontro || encontro.length == 0) throw new BusinessError('Encontro não encontrado.', 409);
 
-            const oficina = await this.oficinaRepository.find({ id: encontro[0].oficina_id });
+            const oficina = await this.oficinaService.find({ id: encontro[0].oficina_id });
             //Improvável
             //if(!oficina || oficina.length == 0) throw new BusinessError('Oficina não encontrada.', 409);
 
@@ -184,7 +143,9 @@ class EncontroService {
             const encontro = await this.encontroRepository.find({ id: encontroId });
             if(!encontro || encontro.length == 0) throw new BusinessError('Encontro não encontrado.', 409);
 
-            const oficina = await this.oficinaRepository.find({ id: encontro[0].oficina_id });
+            const data = new Date(encontro[0].data_horario_inicio);
+
+            const oficina = await this.oficinaService.find({ id: encontro[0].oficina_id });
             //Improvável
             //if(!oficina || oficina.length == 0) throw new BusinessError('Oficina não encontrada.', 409);
 
@@ -195,6 +156,15 @@ class EncontroService {
             if(deleted == 0) {
                 throw new BusinessError("ID não encontrado.", 404);
             }
+
+            this.oficinaService.notificarAssociados({ 
+                id: oficina[0].id, 
+                tituloOriginal: oficina[0].titulo,
+                tituloNotificacao: "Encontro Desmarcado",
+                mensagem: `O encontro de "${oficina[0].titulo}" agendado para ${new Intl.DateTimeFormat('pt-BR').format(data)} foi desmarcado.`,
+            }).catch(err => {
+                console.error("Erro geral no processo de notificações de alteração:", err);
+            });
 
             return deleted;
         } catch(error) {

@@ -5,6 +5,7 @@ const { Encontro } = require('./Encontro');
 const { Professor } = require('./Professor');
 const { AlunoParticipaOficina } = require('./links/AlunoParticipaOficina');
 const { ProfessorTutoraOficina } = require('./links/ProfessorTutoraOficina'); 
+const { Notificacao } = require('./Notificacao');
 
 //Relação Professor-Aluno/Usuario
 Aluno.belongsTo(Usuario, {
@@ -133,6 +134,18 @@ AlunoParticipaOficina.belongsTo(Aluno, {
     as: 'aluno'
 })*/
 
+Usuario.hasMany(Notificacao, {
+    foreignKey: 'usuario_id',
+    as: 'notificacoes'
+})
+
+Notificacao.belongsTo(Usuario, {
+    foreignKey: 'usuario_id',
+    as: 'usuario'
+});
+
+
+
 module.exports = {
     Usuario,
     Aluno,
@@ -140,5 +153,6 @@ module.exports = {
     Encontro,
     Professor,
     AlunoParticipaOficina,
-    ProfessorTutoraOficina
+    ProfessorTutoraOficina,
+    Notificacao
 };
