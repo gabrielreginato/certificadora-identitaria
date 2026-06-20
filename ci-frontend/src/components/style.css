@@ -6,10 +6,7 @@
 }
 
 .body {
-  display: flex;
-  flex-direction: column;
   background-color: #f1f7ff;
-  width: 100%;
   min-height: 100vh;
 }
 
@@ -24,25 +21,29 @@
 .header {
   background-color: #1447e6;
   width: 100%;
-  height: 8rem;
   align-self: center;
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  flex-wrap: wrap;
+}
+
+.header .left-side, .header .right-side {
+  display: flex;
+  align-items: center;
 }
 
 .header .left-side {
-  display: flex;
-  align-items: center;
   gap: 2rem;
   margin-left: 5rem;
 }
 
 .header .right-side {
-  display: flex;
-  align-items: center;
   gap: 5rem;
   margin-right: 5rem;
+  margin-left: 1rem;
+  flex-wrap: wrap;
 }
 
 .header img {
@@ -105,6 +106,10 @@
   background-color: #f0f0f0;
 }
 
+.perfil-button {
+  max-width: 11rem;
+}
+
 /* MAIN */
 .main {
   flex: 1;
@@ -121,8 +126,29 @@
   min-height: 30rem;
 }
 
+@media (max-width: 767px) {
+  .left-side, .right-side {
+    margin: 0 !important;
+    width: 100%;
+    justify-content: center !important;
+  }
+
+  .card-grid { 
+    max-width: 85vw;
+  }
+
+  .card {
+    border-radius: 15px !important;
+  }
+
+
+
+  
+}
+
 /*CARDS*/
 .card {
+  max-width: 100%;
   width: 25rem;
   height: 27rem;
   margin: 15px 0;
@@ -568,3 +594,169 @@
   color: white;
   font-size: 1rem;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*PERFIL PAGE*/
+.app-main h2 {
+    font-size: 2rem;
+}
+
+.app-main h2, .app-main p, .app-main h3 {
+    color: black;
+}
+
+.header p:first-child, .footer p {
+    color: white;
+}
+
+.info-pessoal {
+    background-color: white;
+    width: 80%;
+    align-self: center;
+    margin: 2rem 0;
+    border-radius: 15px;
+    box-shadow: 9px 8px 4px -8px #c5c5c5
+    
+}
+
+.info-content {
+    display: flex;
+    justify-content: space-around;
+}
+
+.info-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    text-align: left;
+    padding: 2rem;
+}
+
+.info-item p:first-child {
+    font-weight: bold;
+}
+
+.info-item p {
+    margin: .5rem 0;
+}
+
+.info-item .icon {
+    width: 2rem;
+    height: 2rem;
+    padding: .75rem;
+    border-radius: 10px;
+    margin-right: 2rem;
+}
+
+
+.linked-oficinas {
+    background-color: white;
+    width: 80%;
+    align-self: center;
+    border-radius: 15px;
+    box-shadow: 9px 8px 4px -8px #c5c5c5;
+    margin-bottom: 2rem;
+}
+
+.linked-oficinas .title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.linked-oficinas .title .left {
+    display: flex;
+    align-items: center;
+    padding: 0 2rem;
+}
+
+.linked-oficinas .title h2 {
+    padding: 0 2rem;
+}
+
+.linked-oficinas .title .icon {
+    width: 2rem;
+    height: 2rem;
+}
+
+.linked-oficinas .title .right {
+    color: #193CB8;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 2rem;
+    padding: 0.75rem 1.25rem;
+    background-color: #DBEAFE;
+    border-radius: 50%;
+}
+
+
+.card-grid {
+    justify-content: center;
+    justify-self: center;
+}
+
+.card-media-container {
+  position: relative;
+  width: 100%;
+}
+
+.card-label {
+  position: absolute;
+  top: 10px;    /* Distância do topo da imagem */
+  right: 10px;  /* Distância da borda direita da imagem */
+  
+  /* Estilização visual (ajuste com as cores do seu app) */
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+  
+  /* Garante que o label fique visualmente acima da imagem */
+  z-index: 2; 
+}
+
+.professor-label, .tutor-label {
+    border-radius: 10px;
+}
+
+.professor-label {
+    background-color: #DBEAFE;
+    color: #193CC7 !important;
+}
+
+.tutor-label {
+    background-color: #D9FFD9;
+    color: #008000 !important;
+}
+

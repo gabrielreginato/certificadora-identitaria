@@ -1,5 +1,4 @@
 import "../style.css";
-import "./style.css";
 import { Header } from "../header/Header";
 import { Footer } from "../footer/Footer";
 import { PageProvider } from "../../contexts/MainContext";
