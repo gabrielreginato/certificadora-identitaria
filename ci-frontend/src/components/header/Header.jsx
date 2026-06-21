@@ -100,7 +100,7 @@ export function Header({ page }) {
     setAnchorEl(null);
   };
 
-  // 🌟 Função ao clicar no botão de notificações revisada
+  // Função ao clicar no botão de notificações revisada
   const handleClickNot = async (event) => {
     setAnchorElNot(event.currentTarget);
 
@@ -215,12 +215,10 @@ export function Header({ page }) {
         </a>
       </div>
 
-      <div
-        className="right-side"
-        style={{ display: "flex", alignItems: "center", gap: "1rem" }}
-      >
+      <div className="right-side">
         {page === "main" && <SearchBar />}
 
+        
         {state.accountData.token === "" || state.accountData.token === null ? (
           <Button
             variant="outlined"
@@ -251,7 +249,7 @@ export function Header({ page }) {
               }}
             >
               <Badge
-                // 🌟 Condição alterada: Só exibe a 'dot' se existir alguma notificação cujo 'visto' seja falso/falsy
+                // Só exibe a dot se existir alguma notificação se 'visto' == false
                 variant={
                   state.notificacoes && state.notificacoes.some(not => !not.visto)
                     ? "dot"

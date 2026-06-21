@@ -40,7 +40,9 @@
 }
 
 .header .right-side {
-  gap: 5rem;
+  display: flex;       /* Adicionado aqui */
+  align-items: center;
+  gap: 1.5rem;
   margin-right: 5rem;
   margin-left: 1rem;
   flex-wrap: wrap;
@@ -72,12 +74,12 @@
 
 .search-bar {
   display: flex;
-  align-items: center;
 }
 
 .search-bar input {
   height: 40px;
-  width: 18rem;
+  width: 100%;          /* Permite que ele use o espaço disponível */
+  max-width: 18rem;     /* Mas limita ao tamanho máximo original */
   font-size: 1.2rem;
   color: #948484;
   background-color: #f1f7ff;
@@ -126,11 +128,53 @@
   min-height: 30rem;
 }
 
+@media (max-width: 900px) {
+  .header .left-side {
+    margin-left: 1.5rem;
+    gap: 1rem;
+  }
+  .header .right-side {
+    margin-right: 1.5rem;
+    gap: 1rem;
+  }
+}
+
 @media (max-width: 767px) {
-  .left-side, .right-side {
+  .header {
+    padding-bottom: 1.5rem;
+  }
+
+  .header .left-side {
     margin: 0 !important;
     width: 100%;
     justify-content: center !important;
+    margin-bottom: 1rem;
+  }
+
+  .header .right-side {
+    margin: 0 !important;
+    width: 100%;
+    padding: 0 1rem; 
+    justify-content: space-between !important; 
+    gap: 0 !important;
+  }
+
+  .header .right-side .notifications-button {
+    width: 3.5rem;
+    height: 3.5rem
+  }
+
+  .search-bar {
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 1rem;
+    order: -1; 
+    padding: 0 1rem; 
+    box-sizing: border-box;
+  }
+
+  .search-bar input {
+    max-width: 100%;
   }
 
   .card-grid { 
@@ -140,10 +184,6 @@
   .card {
     border-radius: 15px !important;
   }
-
-
-
-  
 }
 
 /*CARDS*/
@@ -225,19 +265,30 @@
   border-radius: 8px;
   min-width: 380px;
   max-width: 90%;
-  height: 50vh;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  color: #101828;
+  
+  max-height: 85vh; 
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  color: #101828;
 }
 
 .modal .modal-fields {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
+  
+  overflow-y: auto; 
+  padding-right: 4px;
+}
+
+.modal .modal-fields::-webkit-scrollbar {
+  width: 6px;
+}
+.modal .modal-fields::-webkit-scrollbar-thumb {
+  background-color: #cccccc;
+  border-radius: 4px;
 }
 
 .email-field,
