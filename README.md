@@ -52,4 +52,3 @@
 
 - [João Miguel Dias](https://github.com/joaodiasrosa)
 
-- [João Vitor do Prado](https://github.com/joaopradov)
