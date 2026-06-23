@@ -603,11 +603,10 @@ Exemplo de Resposta de Erro (400)
 - __npx sequelize-cli db:create__
 - __npx sequelize-cli db:migrate__
 
-4. Execute o seeder para criar usuários de exemplo:
-professor1@email.com - 123123...
-aluno1@email.com - 123123...
-- __node seed/seed.js__
-
-5. Execute o projeto
+4. Execute o projeto
 - __npm start__
 
+5. Com a API em execução, execute o seeder para criar usuários de exemplo:
+- __node seed/seed.js__
+professor1@email.com - 123123...
+aluno1@email.com - 123123...
