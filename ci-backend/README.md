@@ -206,9 +206,22 @@ Exemplo de Resposta: 200 OK
 [
     {
         "id": 2,
-        "titulo": "Introdução ao C#",
-        "tema": "Programação",
-        "professor_responsavel": { "nome": "Dr. Hans Chucrute" }
+        "titulo": "Introdução ao Java",
+        "descricao": "Introdução à logica de programação e POO com Java",
+        "tema": "Default",
+        "professor_responsavel_id": 5,
+        "image_url": "https://imagem.png",
+        "createdAt": "2026-05-24T21:04:55.000Z",
+        "updatedAt": "2026-06-20T18:10:10.000Z",
+        "professor": {
+            "id": 5,
+            "email": "professor2@email.com",
+            "tipo": "professor",
+            "perfil_professor": {
+                "id": 2,
+                "nome": "Professor2"
+            }
+        }
     }
 ]
 ```
@@ -221,8 +234,7 @@ Body:
 {
   "titulo": "React Avançado",
   "tema": "Frontend",
-  "descricao": "Oficina focada em Hooks e Performance.",
-  "professor_responsavel_id": 7
+  "descricao": "Oficina focada em Hooks e Performance."
 }
 ```
 
@@ -255,8 +267,7 @@ Obs: Todos estes campos são opcionais. No entanto, pelo menos um campo deve ser
 {
   "titulo": "React Avançado",
   "tema": "Frontend",
-  "descricao": "Oficina focada em Hooks e Performance.",
-  "professor_responsavel_id": 7
+  "descricao": "Oficina focada em Hooks e Performance."
 }
 ```
 ```
@@ -472,108 +483,71 @@ Exemplo de Resposta: 200 Ok
 ]
 ```
 
-🗑 DELETE /encontros/:id
 
-Apaga um encontro de uma oficina. Restrito a Professores.
+🔍 GET /oficinas/notificacoes
+
+Retorna uma lista com todas as notificações do usuário autenticado.
 
 ```
-Exemplo de Resposta: 204 No Content
-```
-
-Com certeza! Escrever uma boa documentação é o que separa um projeto legal de um projeto profissional. Para APIs, o padrão ouro é o Swagger/OpenAPI, mas um arquivo README.md ou API.md bem estruturado é perfeito para guiar outros desenvolvedores (ou você mesmo no futuro).
-
-Aqui está um exemplo de como você pode estruturar essa documentação para o seu sistema de oficinas:
-📚 Documentação da API - Sistema de Oficinas
-
-Esta API gerencia o ciclo de vida de oficinas acadêmicas, desde o cadastro de usuários até o vínculo de participação entre alunos, professores e oficinas.
-🚀 Tecnologias Utilizadas
-
-    Node.js com Express
-
-    Sequelize ORM (MySQL)
-
-    JWT para Autenticação
-
-    Zod para Validação de Schemas
-
-🔐 Autenticação
-
-A maioria dos endpoints requer um token JWT enviado via Header.
-
-    Tipo: Bearer Token
-
-    Header: Authorization: Bearer <seu_token>
-
-🛠 Endpoints
-1. Oficinas
-GET /oficinas
-
-Retorna uma lista de todas as oficinas cadastradas com paginação.
-
-    Query Params (Opcionais): tema, titulo, page.
-
-    Exemplo de Resposta: 200 OK
-
-JSON
+Exemplo de Resposta: 200 Ok
 
 [
-  {
-    "id": 2,
-    "titulo": "Introdução ao C#",
-    "tema": "Programação",
-    "professor_responsavel": { "nome": "Dr. Hans Chucrute" }
-  }
-]
-
-POST /oficinas
-
-Cria uma nova oficina. Restrito a Professores.
-
-    Body:
-
-JSON
-
-{
-  "titulo": "React Avançado",
-  "tema": "Frontend",
-  "descricao": "Oficina focada em Hooks e Performance.",
-  "professor_responsavel_id": 7
-}
-
-2. Vínculos e Inscrições
-GET /oficinas/participantes
-
-Lista os alunos inscritos em oficinas, permitindo filtrar por oficina ou por usuário.
-
-    Query Params:
-
-        oficina_id: Filtra todos os alunos de uma oficina específica.
-
-        usuario_id: Filtra todas as oficinas onde um usuário (aluno) está inscrito.
-
-    Exemplo de Uso: GET /oficinas/participantes?oficina_id=3
-
-    Resposta:
-
-JSON
-
-[
-  {
-    "id": 15,
-    "oficina_id": 3,
-    "aluno": {
-      "nome": "João Silva",
-      "ra": "123456",
-      "usuario": { "email": "joao@email.com" }
+    {
+        "id": 7,
+        "titulo": "Oficina Atualizada",
+        "mensagem": "A oficina \"Introdução ao Python!\" teve seus detalhes alterados pelo professor. Confira as novidades!",
+        "usuario_id": 4,
+        "visto": true,
+        "createdAt": "2026-06-20T17:53:01.000Z",
+        "updatedAt": "2026-06-20T20:42:03.000Z",
+        "usuario": {
+            "id": 4,
+            "email": "professor1@email.com"
+        }
+    },
+    {
+        "id": 11,
+        "titulo": "Oficina Atualizada",
+        "mensagem": "A oficina \"Introdução ao Python\" teve seus detalhes alterados pelo professor. Confira as novidades!",
+        "usuario_id": 4,
+        "visto": true,
+        "createdAt": "2026-06-20T18:10:10.000Z",
+        "updatedAt": "2026-06-20T21:26:50.000Z",
+        "usuario": {
+            "id": 4,
+            "email": "professor1@email.com"
+        }
+    },
+    {
+        "id": 16,
+        "titulo": "Encontro Agendado",
+        "mensagem": "Um novo encontro de \"Introdução ao Python!\" foi agendado para 6",
+        "usuario_id": 4,
+        "visto": true,
+        "createdAt": "2026-06-20T18:16:25.000Z",
+        "updatedAt": "2026-06-20T21:26:50.000Z",
+        "usuario": {
+            "id": 4,
+            "email": "professor1@email.com"
+        }
     }
-  }
 ]
+```
 
-POST /oficinas/inscricao/alunos
+📋 POST /oficinas/notificacoes/check
 
-Realiza a inscrição de um aluno em uma oficina.
+Altera a coluna "visto" de notificações de usuários autenticados para __true__ com base nos IDs  enviados no body.
 
-    Body: { "oficina_id": 2, "aluno_id": 1 }
+Body:
+```
+{
+    "notificacoes": [7, 11, 16]
+}
+```
+
+```
+Exemplo de Resposta: 200 Ok
+```
 
 ## ⚠️ Tratamento de Erros
 
@@ -629,6 +603,11 @@ Exemplo de Resposta de Erro (400)
 - __npx sequelize-cli db:create__
 - __npx sequelize-cli db:migrate__
 
-4. Execute o projeto
+4. Execute o seeder para criar usuários de exemplo:
+professor1@email.com - 123123...
+aluno1@email.com - 123123...
+- __node seed/seed.js__
+
+5. Execute o projeto
 - __npm start__
 
