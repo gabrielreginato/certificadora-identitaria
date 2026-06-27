@@ -608,5 +608,5 @@ Exemplo de Resposta de Erro (400)
 
 5. Com a API em execução, execute o seeder para criar usuários de exemplo:
 - __node seed/seed.js__ <br>
-professor1@email.com - 123123...
+professor1@email.com - 123123... <br>
 aluno1@email.com - 123123...
