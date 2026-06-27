@@ -1,13 +1,12 @@
 # Projeto - Certificadora de Competência Identitária
 
 ## Sistema Proposto
-<p>O sistema proposto consiste em uma <b>aplicação web full-stack</b> destinada a centralizar a <b>gestão de oficinas acadêmicas</b> do projeto ELLP da UTFPR.</p>
+<p>O sistema proposto consiste em uma <b>aplicação web full-stack</b> que visa centralizar a <b>gestão de oficinas acadêmicas</b> do projeto ELLP da UTFPR.</p>
 
-<p>A aplicação permitirá que usuários autenticados consultem informações sobre oficinas e, conforme seu nível de acesso, realizem operações de cadastro, edição e exclusão de dados relacionados a:</p>
+<p>A aplicação permitirá que usuários consultem informações sobre oficinas e, conforme seu nível de acesso, realizem operações de cadastro, edição e exclusão de dados relacionados a:</p>
 
 <ul>
     <li>Oficinas (temas, descrições, encontros)</li>
-    <li>Usuários (alunos, tutores e professores)</li>
     <li>Vínculos entre usuários e oficinas</li>
 </ul>
 
